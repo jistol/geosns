@@ -1,0 +1,69 @@
+server.port: 8080
+
+logging.config: classpath:logback/logback.xml
+
+spring:
+    devtools.livereload.enabled: true
+    thymleaf.cache: false
+    template.cache: false
+    http:
+        multipart:
+            max-file-size: 30MB
+            max-request-size: -1
+    redis:
+        host: localhost
+        port: 6379
+    session:
+        # redis / hash_map
+        store-type: hash_map
+    jpa:
+        hibernate.ddl-auto: create
+        show-sql: true
+    datasource:
+        url: jdbc:h2:file:./db/devdb;AUTO_SERVER=TRUE
+        username: geosns
+        password: geosns
+        driver-class-name: org.h2.Driver
+    h2.console:
+        enabled: true
+        path: /console
+
+base:
+    path: /Users/jistol/IdeaProjects/github/geo-sns
+    #url: http://localhost:${server.port}/
+    #url: http://localhost:8090/
+    #url: http://192.168.123.253:8080/
+    url: http://192.168.1.181:8080/
+    service-url:
+        map: ${base.url}map
+
+google:
+    map:
+        url: https://maps.googleapis.com/
+        key: AIzaSyB29edWOela2POZTB5sq3TLhgV9VT1jnt4
+
+kakao:
+    oauth:
+        login-url: /login/kakao
+        login-complete-url: /login/kakao/complete
+        client :
+            clientId: 1d830bc64b6d92395f2eb7bb8c5d31a6
+            clientSecret: UqhBAsk4iEGoRpCix0oYCmx2Logak85n
+            accessTokenUri: https://kauth.kakao.com/oauth/token
+            userAuthorizationUri: https://kauth.kakao.com/oauth/authorize
+        resource:
+            userInfoUri: https://kapi.kakao.com/v1/user/me
+
+    admin-key: 61a42ae038361e7bc1d70056ddba0526
+
+
+    client-secret: UqhBAsk4iEGoRpCix0oYCmx2Logak85n
+    rest-app-key: 1d830bc64b6d92395f2eb7bb8c5d31a6
+    auth:
+        oauth-url: https://kauth.kakao.com/
+        api-url: https://kapi.kakao.com/
+        urls:
+            callback-req-code: ${base.url}auth/kakao/login/callback
+            req-code: oauth/authorize?response_type=code&encode_state=y&client_id=${kakao.rest-app-key}&redirect_uri=${kakao.auth.urls.callback-req-code}
+            rest-req-token: oauth/token
+            signup: v1/user/signup

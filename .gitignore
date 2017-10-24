@@ -1,0 +1,14 @@
+.gradle
+/build/
+logs
+/db/
+
+node_modules
+package-lock.json
+src/main/resources/static/dist
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr

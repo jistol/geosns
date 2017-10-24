@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Geo-Sns Main Map</title>
+    <meta name="viewport" content="width=device-width"/>
+</head>
+<body>
+<div id="login" class="hide" th:if="${loginUser} != null and ${loginUser.id} > -1" th:text="Y"/>
+<div id="root"/>
+<script type="text/javascript" th:src="@{/dist/map.js}"></script>
+</body>
+</html>

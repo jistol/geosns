@@ -1,0 +1,39 @@
+{
+  "name": "geo-sns",
+  "version": "1.0.0",
+  "description": "geo-sns ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npm run build-js",
+    "build-local": "NODE_ENV='local' npm run build",
+    "build-js": "./node_modules/.bin/webpack --config webpack.config.babel.js",
+    "dev": "NODE_ENV='local' ./node_modules/.bin/webpack-dev-server"
+  },
+  "author": "pptwenty@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "bootstrap-sass": "^3.3.7",
+    "jquery": "^3.2.1",
+    "react": "^16.0.0",
+    "react-bootstrap": "^0.31.3",
+    "react-dom": "^16.0.0",
+    "react-image-gallery": "^0.8.3",
+    "react-overlays": "^0.7.3"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "css-loader": "^0.28.7",
+    "node-sass": "^4.5.3",
+    "react-hot-loader": "^3.0.0-beta.7",
+    "sass-loader": "^6.0.6",
+    "style-loader": "^0.18.2",
+    "webpack": "^3.6.0",
+    "webpack-dev-server": "^2.8.2"
+  }
+}
