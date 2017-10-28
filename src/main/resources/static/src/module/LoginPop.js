@@ -22,7 +22,7 @@ export default class LoginPop extends AbstractPop {
     }
 
     kakaoLogin() {
-        location.href = "/auth/kakao/login";
+        location.href = "/login/kakao";
     }
 
 }

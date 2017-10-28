@@ -1,44 +1,68 @@
 package io.github.jistol.geosns.controller;
 
+import io.github.jistol.geosns.jpa.dao.UserDao;
+import io.github.jistol.geosns.jpa.entry.User;
+import io.github.jistol.geosns.type.LoginType;
+import io.github.jistol.geosns.util.SessionUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.view.RedirectView;
 
-import javax.persistence.Enumerated;
-import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
-import java.util.Enumeration;
-import java.util.HashMap;
+import javax.servlet.http.HttpSession;
 import java.util.Map;
-import java.util.stream.Stream;
+
+import static io.github.jistol.geosns.util.Cast.string;
 
 @Slf4j
 @Controller
 public class OAuthController {
-    @ResponseBody
-    @RequestMapping("/login/kakao/complete")
-    public String complete(HttpServletRequest request, Principal principal) {
-        /*Map<String, String[]> paramMap = request.getParameterMap();
-        paramMap.forEach((key, values) -> {
-            String value = Stream.of(values).reduce((v1, v2) -> v1 + "," + v2).get();
-            log.debug("key[{}]:{}", key, value);
-        });*/
-        OAuth2Authentication authentication = (OAuth2Authentication) SecurityContextHolder.getContext().getAuthentication();
-        Map<String, Object> map = (HashMap<String, Object>) authentication.getUserAuthentication().getDetails();
+    @Autowired private UserDao userDao;
 
+    @RequestMapping("/login/{social}/complete")
+    public RedirectView complete(HttpSession session, @PathVariable("social") String social) {
+        OAuth2Authentication authentication = (OAuth2Authentication)SecurityContextHolder.getContext().getAuthentication();
+        log.debug("/login/complete -> isAuthenticated : {}, grant : {}", authentication.isAuthenticated(), authentication.getAuthorities());
+        Map<String, Object> map = (Map<String, Object>) authentication.getUserAuthentication().getDetails();
+        log.debug("auth : {}", authentication.getAuthorities());
         map.forEach((key, value) -> {
             log.debug("key[{}]:{}", key, value);
         });
 
-        /*Enumeration e = request.getParameterNames();
-        while(e.hasMoreElements()) {
-            Object key = e.nextElement();
-            log.debug("key[{}]:{}", key, request.getParameter(key.toString()));
-        }*/
-        log.debug("Principal : {}", principal);
-        return principal.toString();
+        SessionUtil.storeUser(session, SocialMapper.valueOf(social).loadUser(userDao, map));
+        return new RedirectView("/map");
+    }
+
+    private enum SocialMapper {
+        kakao {
+            @Override public User loadUser(UserDao userDao, Map<String, Object> map) {
+                final String siteId = string(map.get("id"));
+                User user = userDao.findBySiteIdAndLoginType(siteId, LoginType.kakao);
+                if (user == null) {
+                    Map<String, Object> prop = (Map<String, Object>)map.get("properties");
+                    Boolean isEmailVerified = (Boolean)map.get("kaccount_email_verified");
+
+                    user = new User();
+                    user.setSiteId(siteId);
+                    user.setLoginType(LoginType.kakao);
+                    user.setNickname((String)prop.get("nickname"));
+                    if (isEmailVerified != null && isEmailVerified) {
+                        user.setEmail((String)map.get("kaccount_email"));
+                    }
+                    user.setProfileImage((String)prop.get("profile_image"));
+                    user.setThumbnailImage((String)prop.get("thumbnail_image"));
+
+                    userDao.save(user);
+                }
+
+                return user;
+            }
+        };
+
+        abstract public User loadUser(UserDao userDao, Map<String, Object> map);
     }
 }

@@ -28,6 +28,7 @@ export default class AbstractPop extends Component {
     }
 
     open() {
+        console.log('abstractPop open');
         this.setState({ show : true });
     }
 

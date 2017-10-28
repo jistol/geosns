@@ -30,10 +30,11 @@ spring:
 
 base:
     path: /Users/jistol/IdeaProjects/github/geo-sns
+    attach-path: ${base.path}/attaches
     #url: http://localhost:${server.port}/
-    #url: http://localhost:8090/
+    url: http://localhost:8090/
     #url: http://192.168.123.253:8080/
-    url: http://192.168.1.181:8080/
+    #url: http://192.168.1.181:8080/
     service-url:
         map: ${base.url}map
 
@@ -53,17 +54,3 @@ kakao:
             userAuthorizationUri: https://kauth.kakao.com/oauth/authorize
         resource:
             userInfoUri: https://kapi.kakao.com/v1/user/me
-
-    admin-key: 61a42ae038361e7bc1d70056ddba0526
-
-
-    client-secret: UqhBAsk4iEGoRpCix0oYCmx2Logak85n
-    rest-app-key: 1d830bc64b6d92395f2eb7bb8c5d31a6
-    auth:
-        oauth-url: https://kauth.kakao.com/
-        api-url: https://kapi.kakao.com/
-        urls:
-            callback-req-code: ${base.url}auth/kakao/login/callback
-            req-code: oauth/authorize?response_type=code&encode_state=y&client_id=${kakao.rest-app-key}&redirect_uri=${kakao.auth.urls.callback-req-code}
-            rest-req-token: oauth/token
-            signup: v1/user/signup

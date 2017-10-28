@@ -8,6 +8,5 @@ import '../css/map.scss';
 
 ReactDOM.render(
     <Map login={ $('#login').text() == 'Y' }/>,
-    //document.getElementById('root')
     $('#root')[0]
 );

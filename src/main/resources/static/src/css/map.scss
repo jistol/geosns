@@ -70,4 +70,25 @@ div#root {
     }
 }
 
+.post-pop-container {
+    width : 90%;
+    z-index: 1000;
+
+    /*& img.btn {
+        width: 100%;
+        cursor: pointer;
+    }*/
+
+    &.modal-dialog {
+        position: absolute;
+        top: 50%;
+        left: 47%;
+        transform: translate(-50%, -50%) !important;
+    }
+
+    & .modal-body {
+        padding: 5px;
+    }
+}
+
 

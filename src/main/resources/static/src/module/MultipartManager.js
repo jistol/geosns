@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import $ from 'jquery';
 import AlignDiv from './AlignDiv';
 import ImageGallery from 'react-image-gallery';
 import "react-image-gallery/styles/css/image-gallery.css";
@@ -26,6 +27,8 @@ export default class MultipartManager extends Component {
                     defaultImage={this.props.defaultImage.original}
                     lazyLoad={this.props.lazyLoad}
                     showThumbnails={false}
+                    showFullscreenButton={false}
+                    showPlayButton={false}
                 />
             </div>
         );
@@ -102,7 +105,7 @@ export default class MultipartManager extends Component {
         this.setState({ images : [this.props.defaultImage] });
     }
 
-    appendToFormData(formData, argName) {
+    appendToFormData(argName, formData) {
         let _self = this;
         Object.keys(_self.fileMap).forEach(key => {
             let file = _self.fileMap[key];
@@ -111,21 +114,30 @@ export default class MultipartManager extends Component {
         });
     }
 
-    submit(url, formData, method = 'post', argName = 'attaches') {
-        this.appendToFormData(formData, argName);
+    submit(url, formData, { complete, success, error }, method = 'post', argName = 'attaches') {
+        this.appendToFormData(argName, formData);
 
-        fetch(url, {
-            method: method,
-            body: formData
-        }).then(res => {
-            if (res.status == 200 || res.status == 201) {
-                res.text().then(text => {
-                    console.log(`result : ${text}`);
-                });
-            } else {
-                console.error(`error : ${res.statusText}`);
+        console.log(`url : ${url}, method : ${method}`);
+
+        $.ajax({
+            url : url,
+            type : method,
+            data : formData,
+            processData: false,
+            contentType: false,
+            complete : (xhr, status) => {
+                console.log(`complete status : ${status}`);
+                complete(xhr, status);
+            },
+            success : (result, status, xhr) => {
+                console.log(`success status : ${status}, result : ${result}`);
+                success(result, status, xhr);
+            },
+            error : (xhr,status,err) => {
+                console.log(`error status : ${status}, error : ${err}`);
+                error(xhr, status, err);
             }
-        }).catch(err => console.error(`exception : ${err.message}`));
+        });
     }
 
     submitByForm(formId, argName = 'attaches') {
@@ -140,11 +152,14 @@ export default class MultipartManager extends Component {
 MultipartManager.defaultProps = {
     style: {
         container: {
-            height: '350px'
+            height: '350px',
+            display: 'table',
+            margin: '0 auto'
         },
         fileView: {
             item : {
-                height: '350px'
+                height: '350px',
+                width: '300px'
             },
             close : {
                 position: 'fixed',top: '10px',left: '10px',

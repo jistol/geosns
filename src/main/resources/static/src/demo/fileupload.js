@@ -14,7 +14,7 @@ class Camera extends Component {
 
     doSubmit() {
         let formData = new FormData(),
-            url = '/map/post';
+            url = '/rest/map/post';
         formData.append('message', document.querySelector('#message'));
         this._mng.submit(url, formData);
     }

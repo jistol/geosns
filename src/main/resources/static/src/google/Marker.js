@@ -40,6 +40,7 @@ export default class Marker {
             dragend : () => {
                 let position = this.marker.getPosition();
                 console.log(`marker dragend + ${position.lat}, ${position.lng}`);
+                (this.options.listener.dragend || (()=>{}))(position, this);
             }
         };
     }

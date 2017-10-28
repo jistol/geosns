@@ -12,6 +12,7 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "base")
 public class BaseProps {
     private String path;
+    private String attachPath;
     private String url;
     private Map<String, String> serviceUrl = new HashMap<>();
 }

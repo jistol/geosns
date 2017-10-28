@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Data
@@ -13,15 +14,19 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Entity
 @Table(name = "user")
-public class User<T extends Serializable> {
+public class User implements Serializable {
     @Id
     @GeneratedValue
     private long id;
+    @NotNull
     private String siteId;
+    @NotNull
     @Enumerated(EnumType.STRING)
     private LoginType loginType;
-    @Transient
-    private String token;
-    @Transient
-    private T data;
+
+    // optional
+    private String nickname;
+    private String email;
+    private String profileImage;
+    private String thumbnailImage;
 }

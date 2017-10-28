@@ -5,24 +5,23 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "posting")
-public class Posting {
+@Table(name = "post")
+public class Post {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
-    /*@NotNull
-    @Column(insertable = false)
-    @OneToOne(fetch = FetchType.LAZY)
-    private User user;*/
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn
+    private User user;
     @Lob
     private String message;
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn
     private Collection<Attach> attaches;
 }

@@ -3,6 +3,7 @@ import $ from 'jquery';
 import Marker from './Marker';
 import GeoWatcher from '../module/GeoWatcher';
 import LoginPop from '../module/LoginPop';
+import PostPop from '../module/PostPop';
 import User from './User';
 
 export default class Map extends Component {
@@ -13,7 +14,10 @@ export default class Map extends Component {
         this.user = undefined;
         this.activeMarker = undefined;
         this.markers = [];
-        this._loginPop = undefined;
+        this._pop = {
+            login : undefined,
+            post : undefined
+        };
     }
 
     render() {
@@ -27,7 +31,8 @@ export default class Map extends Component {
                     <div ref={node => this.target = node} className="full">loading...</div>
                     <img src="/img/add.png" className="btn w-70 b-r-5 fixed" onClick={this.getIfLogin(this.addClick).bind(this)}/>
                     <img src="/img/curTarget.png" className="btn w-65 t-l-5 fixed" onClick={this.curTargetClick.bind(this)}/>
-                    <LoginPop ref={pop => this._loginPop = pop} onHide={this.closeLoginPop.bind(this)}/>
+                    <LoginPop ref={pop => this._pop.login = pop} onHide={this.closePop.bind(this)('login')}/>
+                    <PostPop ref={pop => this._pop.post = pop} onHide={this.closePop.bind(this)('post')}/>
                 </div>
             );
         }
@@ -116,8 +121,11 @@ export default class Map extends Component {
         let _self = this;
         this.moveCenter();
         this.activeMarker = new Marker(google.maps, this.map, {
-            listener :
-                { complete : () => {
+            listener : {
+                dragend : (position, marker) => {
+                    _self.openPop('post')();
+                },
+                complete : () => {
                     _self.markers.push(_self.activeMarker);
                     _self.activeMarker = undefined;
                 }
@@ -134,15 +142,21 @@ export default class Map extends Component {
 
     getIfLogin(callback) {
         console.log(`props.login = ${this.props.login}`);
-        return this.props.login ? callback : this.openLoginPop;
+        return this.props.login ? callback : this.openPop('login');
     }
 
-    openLoginPop() {
-        this._loginPop.open();
+    openPop(name) {
+        let self = this;
+        return (() => {
+            self._pop[name].open();
+        }).bind(this);
     }
 
-    closeLoginPop() {
-        this._loginPop.close();
+    closePop(name) {
+        let self = this;
+        return (() => {
+            self._pop[name].close();
+        }).bind(this);
     }
 }
 

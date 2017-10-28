@@ -6,8 +6,10 @@ import org.springframework.util.NumberUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class Util {
@@ -31,8 +33,18 @@ public class Util {
         return str1 == null? str2.equals(str1) : str1.equals(str2);
     }
 
-    public static boolean isEmpty(String str) {
-        return str == null || str.isEmpty();
+    public static boolean isEmpty(Object value) {
+        if (value == null) {
+            return true;
+        } else if (value instanceof String) {
+            return ((String) value).isEmpty();
+        } else if (value instanceof Map) {
+            return ((Map) value).isEmpty();
+        } else if (value instanceof Collection) {
+            return ((Collection) value).isEmpty();
+        } else {
+            return false;
+        }
     }
 
     public static String getCurrentTimeStamp() {
@@ -67,5 +79,15 @@ public class Util {
     public static <T extends Number> T getNumber(String num, Class<T> clazz) {
         Double d = Double.parseDouble(num);
         return NumberUtils.convertNumberToTargetClass(d, clazz);
+    }
+
+    public static <T> T getIfEmpty(T value, T defaultValue) {
+        return isEmpty(value)? defaultValue : value;
+    }
+
+    public static <T> void doIfPresent(T param, Consumer<T> consumer) {
+        if (!isEmpty(param)) {
+            consumer.accept(param);
+        }
     }
 }
