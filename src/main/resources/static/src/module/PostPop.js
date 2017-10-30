@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Modal, Form, FormGroup, FormControl, InputGroup, OverlayTrigger, HelpBlock, Popover } from 'react-bootstrap';
+import { Modal, Form, FormGroup, FormControl, InputGroup, OverlayTrigger, Panel, Popover } from 'react-bootstrap';
 import AbstractPop from "./AbstractPop";
 import FileInput from './FileInput';
 import MultipartManager from './MultipartManager';
@@ -28,20 +28,32 @@ export default class PostPop extends AbstractPop {
                 errors = Object.entries(result.errors || {});
 
             if (errors.length > 0) {
-                this.setState({ formGroupState: 'error' });
+                switch(errors[0][0]) {
+                    case 'message':
+                        this.showError('메시지를 입력하세요.');
+                        break;
+                    default:
+                        alert(errors[0][1]);
+                }
             }
         }
     }
 
+    showError(msg, timeout = 3000) {
+        this.setState({ formGroupState: 'error', errorOpen: true, errorMsg: msg });
+        setTimeout((() => {
+            this.setState({ errorOpen: false, errorMsg: '' });
+        }).bind(this), timeout);
+    }
+
     doSubmit() {
-        let self = this,
-            formData = new FormData(),
+        let formData = new FormData(),
             { lat, lng, listener } = this.options,
             url = '/rest/map/post',
             message = $('#message').val();
 
         if (!message) {
-            self.setState({ formGroupState: 'error' });
+            this.showError('메시지를 입력하세요.');
             return;
         }
 
@@ -71,17 +83,18 @@ export default class PostPop extends AbstractPop {
             <Modal.Body style={{padding:'0'}}>
                 <div>
                     <MultipartManager ref={ ref => this._mng = ref }/>
+                    <Panel id="errorMsg" collapsible expanded={this.state.errorOpen} className="panel-error-msg">{this.state.errorMsg}</Panel>
                     <div style={{minHeight:'100px',maxWidth:'100%', maxHeight:'100%'}}>
                         <Form horizontal>
                             <FormGroup style={{margin: '0 auto'}} validationState={this.state.formGroupState}>
                                 <InputGroup style={{position:'relative', bottom:0, left:0, right:0}}>
-                                    <InputGroup.Addon className="pop-btn" onClick={filesClick}>
+                                    <InputGroup.Addon className="pop-btn left" onClick={filesClick}>
                                         <OverlayTrigger ref={ ref => this._files = ref } trigger="click" rootClose placement="top" overlay={this.renderFiles()}>
                                             <MdAdd className="react-icon sm"/>
                                         </OverlayTrigger>
                                     </InputGroup.Addon>
                                     <FormControl id="message" componentClass="textarea" placeholder="message here..." className="bg-base" style={{minHeight:'100px'}}/>
-                                    <InputGroup.Addon className="pop-btn" onClick={this.doSubmit.bind(this)}>
+                                    <InputGroup.Addon className="pop-btn right" onClick={this.doSubmit.bind(this)}>
                                         <MdSend className="react-icon sm"/>
                                     </InputGroup.Addon>
                                 </InputGroup>
@@ -98,7 +111,7 @@ export default class PostPop extends AbstractPop {
     }
 
     open(options) {
-        this.setState(Object.assign({ show: true, formGroupState: null }));
+        this.setState({ show: true, formGroupState: null, errorOpen: false, errorMsg: '' });
         this.options = options || {};
     }
 }

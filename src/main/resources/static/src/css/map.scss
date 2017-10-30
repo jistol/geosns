@@ -116,8 +116,31 @@ $react-icon-color-hover: #333333;
 .pop-btn {
     background-color: $bg-color-thin;
     cursor: pointer;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+
     &:hover {
         background-color: $bg-color-deep;
     }
+
+    &.left {
+        border-left: 0;
+    }
+
+    &.right {
+        border-right: 0;
+    }
 }
 
+.panel-error-msg  {
+    padding: 0;
+    margin: 5px;
+    text-align: center;
+    border: 0;
+}
+
+#errorMsg .panel-body {
+    padding: 0;
+    color: #d14556;
+}
