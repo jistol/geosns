@@ -1,65 +1,93 @@
 import React, { Component } from 'react';
-import { Modal, Form, FormGroup, FormControl, Col } from 'react-bootstrap';
+import { Modal, Form, FormGroup, FormControl, InputGroup, OverlayTrigger, HelpBlock, Popover } from 'react-bootstrap';
 import AbstractPop from "./AbstractPop";
 import FileInput from './FileInput';
 import MultipartManager from './MultipartManager';
 import $ from 'jquery';
+import MdSend from 'react-icons/lib/md/send';
+import MdAdd from 'react-icons/lib/md/add';
+import MdInsertPhoto from 'react-icons/lib/md/insert-photo';
+import MdCameraAlt from 'react-icons/lib/md/camera-alt';
 
 import "react-image-gallery/styles/css/image-gallery.css";
 
 export default class PostPop extends AbstractPop {
     constructor(props) {
         super(props);
+        this.state = { formGroupState: null };
     }
 
     onChange(e) {
         this._mng.addFile(e.target.files);
+        this._files.hide();
+    }
+
+    onError(xhr,status,error) {
+        if (xhr.status == 400 && xhr.readyState == 4) {
+            let result = JSON.parse(xhr.responseText),
+                errors = Object.entries(result.errors || {});
+
+            if (errors.length > 0) {
+                this.setState({ formGroupState: 'error' });
+            }
+        }
     }
 
     doSubmit() {
-        let formData = new FormData(),
+        let self = this,
+            formData = new FormData(),
+            { lat, lng, listener } = this.options,
             url = '/rest/map/post',
-            listener = {
-                complete : (xhr, status) => {},
-                success : (result, status, xhr) => {
+            message = $('#message').val();
 
-                },
-                error : (xhr,status,error) => {
+        if (!message) {
+            self.setState({ formGroupState: 'error' });
+            return;
+        }
 
-                }
-            };
-        formData.append('message', $('#message').val());
-        this._mng.submit(url, formData, listener);
+        formData.append('message', message);
+        formData.append('lat', lat);
+        formData.append('lng', lng);
+        this._mng.submit(url, formData, Object.assign(listener, {error : this.onError.bind(this)}));
+    }
+
+    renderFiles() {
+        let camera = () => (<MdCameraAlt className='react-icon'/>),
+            gallery = () => (<MdInsertPhoto className='react-icon'/>);
+
+        return (
+            <Popover id="popover-trigger-focus">
+                <FileInput capture="camera" accept="image/*" icon={camera} onChange={this.onChange.bind(this)}/>
+                <FileInput accept="image/*" icon={gallery} onChange={this.onChange.bind(this)} multiple/>
+            </Popover>
+        );
     }
 
     renderContent() {
-        console.log('do renderContent');
-
-        let images = {
-            camera : '/img/camera.png',
-            video: '/img/video.png',
-            camcorder: '/img/camcorder.png',
-            gallery: '/img/gallery.png'
-        };
+        let self = this,
+            filesClick = () => self._files.handleToggle();
 
         return (
-            <Modal.Body>
+            <Modal.Body style={{padding:'0'}}>
                 <div>
                     <MultipartManager ref={ ref => this._mng = ref }/>
-                    <Form horizontal>
-                        <FormGroup controlId="message">
-                            <Col sm={10}>
-                                <FormControl type="textarea"/>
-                            </Col>
-                        </FormGroup>
-                    </Form>
-                    <div className="file-inputs">
-                        <FileInput capture="camera" accept="image/*" src={images.camera} onChange={this.onChange.bind(this)}/>
-                        <FileInput capture="camcorder" accept="video/*" src={images.camcorder} onChange={this.onChange.bind(this)}/>
-                        <FileInput accept="image/*" src={images.gallery} onChange={this.onChange.bind(this)} multiple/>
-                        <FileInput accept="video/*" src={images.video} onChange={this.onChange.bind(this)} multiple/>
+                    <div style={{minHeight:'100px',maxWidth:'100%', maxHeight:'100%'}}>
+                        <Form horizontal>
+                            <FormGroup style={{margin: '0 auto'}} validationState={this.state.formGroupState}>
+                                <InputGroup style={{position:'relative', bottom:0, left:0, right:0}}>
+                                    <InputGroup.Addon className="pop-btn" onClick={filesClick}>
+                                        <OverlayTrigger ref={ ref => this._files = ref } trigger="click" rootClose placement="top" overlay={this.renderFiles()}>
+                                            <MdAdd className="react-icon sm"/>
+                                        </OverlayTrigger>
+                                    </InputGroup.Addon>
+                                    <FormControl id="message" componentClass="textarea" placeholder="message here..." className="bg-base" style={{minHeight:'100px'}}/>
+                                    <InputGroup.Addon className="pop-btn" onClick={this.doSubmit.bind(this)}>
+                                        <MdSend className="react-icon sm"/>
+                                    </InputGroup.Addon>
+                                </InputGroup>
+                            </FormGroup>
+                        </Form>
                     </div>
-                    <button name="submit" value="submit" onClick={this.doSubmit.bind(this)}>Submit</button>
                 </div>
             </Modal.Body>
         );
@@ -69,4 +97,8 @@ export default class PostPop extends AbstractPop {
         return 'post-pop-container';
     }
 
+    open(options) {
+        this.setState(Object.assign({ show: true, formGroupState: null }));
+        this.options = options || {};
+    }
 }

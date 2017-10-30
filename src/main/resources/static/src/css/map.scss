@@ -74,11 +74,6 @@ div#root {
     width : 90%;
     z-index: 1000;
 
-    /*& img.btn {
-        width: 100%;
-        cursor: pointer;
-    }*/
-
     &.modal-dialog {
         position: absolute;
         top: 50%;
@@ -91,4 +86,38 @@ div#root {
     }
 }
 
+$bg-color-thin: rgba(220, 220, 220, 0.88);
+$bg-color-deep: #cecece;
+$bg-color: rgba(245, 245, 245, 0.36);
+
+$react-icon-color: #575757;
+$react-icon-color-hover: #333333;
+
+
+
+.react-icon {
+    color: $react-icon-color;
+    width: 45px;
+    height: 45px;
+    cursor: pointer;
+    &:hover {
+        color: $react-icon-color-hover;
+    }
+    &.sm {
+        width: 25px;
+        height: 25px;
+    }
+}
+
+.bg-base {
+    background-color: $bg-color;
+}
+
+.pop-btn {
+    background-color: $bg-color-thin;
+    cursor: pointer;
+    &:hover {
+        background-color: $bg-color-deep;
+    }
+}
 

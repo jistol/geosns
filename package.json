@@ -17,8 +17,9 @@
     "bootstrap-sass": "^3.3.7",
     "jquery": "^3.2.1",
     "react": "^16.0.0",
-    "react-bootstrap": "^0.31.3",
+    "react-bootstrap": "^0.31.5",
     "react-dom": "^16.0.0",
+    "react-icons": "^2.2.7",
     "react-image-gallery": "^0.8.3",
     "react-overlays": "^0.7.3"
   },

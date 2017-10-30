@@ -1,26 +1,32 @@
 import React, { Component } from 'react';
 import $ from 'jquery';
 import AlignDiv from './AlignDiv';
+import MdCancel from 'react-icons/lib/md/cancel';
 import ImageGallery from 'react-image-gallery';
 import "react-image-gallery/styles/css/image-gallery.css";
 
 export default class MultipartManager extends Component {
     constructor(props) {
         super(props);
-
         this.state = {
-            images: [ this.props.defaultImage ]
+            images: [ this.props.defaultImage ],
+            closeStyle: Object.assign(this.props.style.close, {display:'none'})
         };
 
-        this.fileMap = {};
+        this.init();
+    }
+
+    init() {
+        delete this.fileMap;
+        this.fileMap = [];
         this.isDefault = true;
-        this.fileSize = 0;
     }
 
     render() {
         let { container } = this.props.style;
         return (
             <div className="multipart-manager-container" style={container}>
+                <MdCancel style={this.state.closeStyle} className="react-icon sm" onClick={this.onClose().bind(this)}/>
                 <ImageGallery
                     ref={ ref => this._gallery = ref }
                     items={this.state.images}
@@ -38,9 +44,6 @@ export default class MultipartManager extends Component {
         let { fileView } = this.props.style;
         return (
             <AlignDiv cellStyle={fileView.item} center>
-                <div style={fileView.close} onClick={this.onClose(item.original).bind(this)}>
-                    <img style={fileView.closeImg} src="/img/close.png"/>
-                </div>
                 <img src={item.original} style={fileView.img}/>
             </AlignDiv>
         );
@@ -49,7 +52,7 @@ export default class MultipartManager extends Component {
 
     addFile(files, onError) {
         let { maxFileSize } = this.props,
-            { images } = this.state;
+            { images, closeStyle } = this.state;
 
         for (let i=0,ilen=files.length ; i<ilen ; i++) {
             let file = files[i],
@@ -68,7 +71,7 @@ export default class MultipartManager extends Component {
                 this.fileSize = 0;
             }
 
-            this.fileMap[src] = file;
+            this.fileMap.push(file);
             this.fileSize += file.size;
 
             images.push({
@@ -78,43 +81,49 @@ export default class MultipartManager extends Component {
             });
         }
 
-        this.setState({ images : images });
+        closeStyle.display = '';
+        this.setState({
+            images : images,
+            closeStyle : closeStyle
+        });
         this._gallery.slideToIndex(images.length - 1);
     }
 
-    onClose(src) {
+    onClose() {
         return () => {
-            this.props.onClose(this.fileMap[src]);
-            this.state.images.length > 1? this.removeImage(src) : this.backToDefault();
+            let idx = this._gallery.getCurrentIndex();
+            this.props.onClose(this.fileMap[idx]);
+            this.state.images.length > 1? this.removeImage(idx) : this.backToDefault();
         }
     }
 
-    removeImage(src) {
-        let { images } = this.state,
-            idx = images.findIndex((item) => item.original == src);
+    removeImage(idx) {
+        let { images } = this.state;
 
         images.splice(idx, 1);
+        this.fileMap.splice(idx, 1);
         this.setState({ images : images });
-        delete this.fileMap[src];
     }
 
     backToDefault() {
-        delete this.fileMap;
-        this.fileMap = [];
-        this.isDefault = true;
-        this.setState({ images : [this.props.defaultImage] });
+        let { closeStyle } = this.state;
+        closeStyle.display = 'none';
+        this.init();
+        this.setState({
+            images : [this.props.defaultImage],
+            closeStyle: closeStyle
+        });
     }
 
     appendToFormData(argName, formData) {
         let _self = this;
-        Object.keys(_self.fileMap).forEach(key => {
-            let file = _self.fileMap[key];
-            console.log(`appendToFormData key[${key}]:file[${file.name}]`);
+        this.fileMap.forEach(file => {
+            console.log(`appendToFormData file[${file.name}]`);
             formData.append(argName, file);
         });
     }
 
-    submit(url, formData, { complete, success, error }, method = 'post', argName = 'attaches') {
+    submit(url, formData, { complete = ()=>{}, success = ()=>{}, error = ()=>{} }, method = 'post', argName = 'files') {
         this.appendToFormData(argName, formData);
 
         console.log(`url : ${url}, method : ${method}`);
@@ -140,7 +149,7 @@ export default class MultipartManager extends Component {
         });
     }
 
-    submitByForm(formId, argName = 'attaches') {
+    submitByForm(formId, argName = 'files') {
         let form = document.querySelector(`#${formId}`),
             method = form.getAttribute('method') || 'post',
             action = form.getAttribute('action'),
@@ -152,25 +161,23 @@ export default class MultipartManager extends Component {
 MultipartManager.defaultProps = {
     style: {
         container: {
-            height: '350px',
+            height: '390px',
             display: 'table',
-            margin: '0 auto'
+            margin: '0 auto',
+            width: '100%'
+        },
+        close : {
+            position: 'absolute',top: '0',left: '3px', cursor: 'pointer',
+            width: '30px', height: '30px', zIndex: '1000', display: 'none'
         },
         fileView: {
             item : {
-                height: '350px',
+                height: '390px',
                 width: '300px'
             },
-            close : {
-                position: 'fixed',top: '10px',left: '10px',
-                cursor: 'pointer'
-            },
-            closeImg : {
-                width: '40px', height: '40px'
-            },
             img : {
-                maxHeight:'300px',
-                maxWidth: '300px',
+                maxHeight:'100%',
+                maxWidth: '100%',
                 width: 'auto',
                 height: 'auto'
             }

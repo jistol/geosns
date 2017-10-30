@@ -7,7 +7,7 @@ export default class AlignDiv extends Component {
 
     render() {
         let { left, right, top, bottom, center, tableStyle, cellStyle } = this.props,
-            ts = Object.assign({ display: 'table' }, tableStyle),
+            ts = Object.assign({ display: 'table', width: '100%' }, tableStyle),
             cs = Object.assign({ display: 'table-cell' }, cellStyle);
 
         if (left || right || top || bottom) {

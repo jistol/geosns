@@ -38,9 +38,7 @@ export default class Marker {
                 (this.options.listener.complete || (()=>{}))();
             },
             dragend : () => {
-                let position = this.marker.getPosition();
-                console.log(`marker dragend + ${position.lat}, ${position.lng}`);
-                (this.options.listener.dragend || (()=>{}))(position, this);
+                (this.options.listener.dragend || (()=>{}))(this.marker.getPosition(), this);
             }
         };
     }
@@ -57,15 +55,6 @@ export default class Marker {
             };
         }
     }
-
-    /*
-    move(lat, lng) {
-        if (this.marker) {
-            this.marker.getLat(lat);
-            this.marker.getLng(lng);
-        }
-    }
-    */
 
     disdraggable() {
         if (!this.marker) { return; }

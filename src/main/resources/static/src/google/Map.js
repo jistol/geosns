@@ -31,8 +31,8 @@ export default class Map extends Component {
                     <div ref={node => this.target = node} className="full">loading...</div>
                     <img src="/img/add.png" className="btn w-70 b-r-5 fixed" onClick={this.getIfLogin(this.addClick).bind(this)}/>
                     <img src="/img/curTarget.png" className="btn w-65 t-l-5 fixed" onClick={this.curTargetClick.bind(this)}/>
-                    <LoginPop ref={pop => this._pop.login = pop} onHide={this.closePop.bind(this)('login')}/>
-                    <PostPop ref={pop => this._pop.post = pop} onHide={this.closePop.bind(this)('post')}/>
+                    <LoginPop ref={pop => this._pop.login = pop} />
+                    <PostPop ref={pop => this._pop.post = pop} />
                 </div>
             );
         }
@@ -53,27 +53,27 @@ export default class Map extends Component {
     }
 
     loadMap() {
-        let _self = this;
+        let self = this;
         this.watcher.start();
         this.watcher.addListener((lat, lng) => {
             // 지도 위치가 현재 위치와 같으며 초기화 되어 있는 경우
             // 계속 현재 이동 위치와 맵의 위치를 동기화 한다.
-            if (!_self.doDrag && _self.isInitMap()) {
-                _self.map.panTo({ lat : lat, lng : lng });
+            if (!self.doDrag && self.isInitMap()) {
+                self.map.panTo({ lat : lat, lng : lng });
             }
 
             // 사용자 위치 이동
-            if (_self.user) {
-                _self.user.move(lat, lng);
+            if (self.user) {
+                self.user.move(lat, lng);
             }
         });
 
-        window[this.props.callback] = () => _self.loadComplete();
+        window[this.props.callback] = () => self.loadComplete();
         $.getScript(`/google/map/js?callback=${this.props.callback}`);
     }
 
     loadComplete() {
-        let _self = this, events = this.getEvents();
+        let self = this, events = this.getEvents();
         this.map = new google.maps.Map(this.target, {
             zoom: this.props.zoom,
             language: this.props.language,
@@ -85,7 +85,7 @@ export default class Map extends Component {
         });
 
         Object.keys(events).forEach((name) => {
-            _self.map.addListener(name, events[name].bind(_self));
+            self.map.addListener(name, events[name].bind(self));
         });
 
         // traffic layer
@@ -116,18 +116,25 @@ export default class Map extends Component {
     }
 
     addClick() {
-        console.log('do addClick...');
         if (this.activeMarker || !this.map) { return; }
-        let _self = this;
+        let self = this;
         this.moveCenter();
         this.activeMarker = new Marker(google.maps, this.map, {
             listener : {
-                dragend : (position, marker) => {
-                    _self.openPop('post')();
+                dragend : (pos, marker) => {
+                    console.log(`lat : ${pos.lat()}, lng : ${pos.lng()}`);
+                    let listener = {
+                        success : (result, status, xhr) => {
+                            marker.disdraggable();
+                            self._pop['post'].close();
+                            self.activeMarker = undefined;
+                        }
+                    };
+                    self.openPop('post')({ lat: pos.lat(), lng: pos.lng(), listener: listener });
                 },
                 complete : () => {
-                    _self.markers.push(_self.activeMarker);
-                    _self.activeMarker = undefined;
+                    self.markers.push(self.activeMarker);
+                    self.activeMarker = undefined;
                 }
             }
         });
@@ -147,15 +154,9 @@ export default class Map extends Component {
 
     openPop(name) {
         let self = this;
-        return (() => {
-            self._pop[name].open();
-        }).bind(this);
-    }
-
-    closePop(name) {
-        let self = this;
-        return (() => {
-            self._pop[name].close();
+        return ((options) => {
+            options.onHide = () => self._pop[name].close();
+            self._pop[name].open(options);
         }).bind(this);
     }
 }

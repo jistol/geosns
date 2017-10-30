@@ -27,11 +27,30 @@
         </filter>
     </appender>
 
+    <appender name="EXCEPTION_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logBaseDir}/exception.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logOldDir}/exception.%d{yyyy-MM-dd HH:mm}.%i.log${compType}</fileNamePattern>
+            <maxHistory>${maxLogHistory}</maxHistory>
+            <maxFileSize>${maxFileSize}</maxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${pt_COMMON}</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+    </appender>
+
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
     </root>
 
     <logger name="io.github.jistol.geosns" level="${logLevel}">
         <appender-ref ref="ALL_LOG"/>
+    </logger>
+
+    <logger name="io.github.jistol.geosns.exception" level="ERROR">
+        <appender-ref ref="EXCEPTION_LOG"/>
     </logger>
 </configuration>

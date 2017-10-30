@@ -1,7 +1,9 @@
 .gradle
 /build/
 logs
-/db/
+db
+out
+attaches
 
 node_modules
 package-lock.json
