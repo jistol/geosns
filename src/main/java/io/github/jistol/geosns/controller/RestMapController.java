@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,12 +30,11 @@ public class RestMapController {
     @Autowired private PostService postService;
 
     @PostMapping(value = "/post")
-    public Map<String, Object> post(HttpSession httpSession,
+    public ResponseEntity<Map<String, Object>> post(HttpSession httpSession,
                                     @RequestParam(name = "files", required = false) MultipartFile[] files,
                                     Post post) throws IOException, InvocationTargetException, IllegalAccessException {
-        log.debug("do posting : {}", post);
         postService.save(httpSession, post, files);
-        return map(entry("code", "0000"), entry("msg", "success"));
+        return ResponseEntity.ok(map(entry("code", HttpStatus.OK.value()), entry("msg", "success")));
     }
 
     @GetMapping("/files/{filename:.+}")

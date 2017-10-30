@@ -7,11 +7,16 @@ export default class GeoWatcher {
         this.lng = 0;
     }
 
+    getPosition() {
+        return { lat : this.lat, lng : this.lng };
+    }
+
     start() {
         if (this.watchId) { return; }
+
+        let _self = this;
         this.watchId = navigator.geolocation.watchPosition(
             (position) => {
-                let _self = this;
                 this.lat = position.coords.latitude;
                 this.lng = position.coords.longitude;
 

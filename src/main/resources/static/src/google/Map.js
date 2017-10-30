@@ -9,6 +9,7 @@ import User from './User';
 export default class Map extends Component {
     constructor() {
         super();
+        this.isInit = false;
         this.doDrag = false;
         this.watcher = new GeoWatcher();
         this.user = undefined;
@@ -44,27 +45,26 @@ export default class Map extends Component {
         }
     }
 
-    isInitMap() {
-        return this.map && this.map.constructor == google.maps.Map;
-    }
-
     moveCenter() {
-        this.map.panTo({ lat : this.watcher.lat, lng : this.watcher.lng });
+        //this.map.panTo({ lat : this.watcher.lat, lng : this.watcher.lng });
+        this.map.panTo(this.watcher.getPosition());
     }
 
     loadMap() {
         let self = this;
         this.watcher.start();
         this.watcher.addListener((lat, lng) => {
-            // 지도 위치가 현재 위치와 같으며 초기화 되어 있는 경우
-            // 계속 현재 이동 위치와 맵의 위치를 동기화 한다.
-            if (!self.doDrag && self.isInitMap()) {
-                self.map.panTo({ lat : lat, lng : lng });
-            }
+            if (self.isInit) {
+                // 지도 위치가 현재 위치와 같으며 초기화 되어 있는 경우
+                // 계속 현재 이동 위치와 맵의 위치를 동기화 한다.
+                if (!self.doDrag) {
+                    self.map.panTo({ lat : lat, lng : lng });
+                }
 
-            // 사용자 위치 이동
-            if (self.user) {
-                self.user.move(lat, lng);
+                // 사용자 위치 이동
+                if (self.user) {
+                    self.user.move(lat, lng);
+                }
             }
         });
 
@@ -75,8 +75,10 @@ export default class Map extends Component {
     loadComplete() {
         let self = this, events = this.getEvents();
         this.map = new google.maps.Map(this.target, {
+            center: this.watcher.getPosition(),
             zoom: this.props.zoom,
             language: this.props.language,
+            scrollwheel: false,
             zoomControl: false,
             streetViewControl: false,
             rotateControl: false,
@@ -97,12 +99,10 @@ export default class Map extends Component {
     }
 
     getEvents() {
+        let self = this;
         return {
             click : () => {
-                if (this.activeMarker) {
-                    this.activeMarker.hide();
-                    this.activeMarker = undefined;
-                }
+                self.hideActiveMarker();
             },
             dragend : () => {
                 this.doDrag = true;
@@ -111,18 +111,28 @@ export default class Map extends Component {
                 if (!this.user) {
                     this.user = new User(google.maps, this.map, {});
                 }
+                this.isInit = true;
             }
         };
     }
 
+    hideActiveMarker() {
+        if (this.activeMarker) {
+            this.activeMarker.hide();
+            this.activeMarker = undefined;
+        }
+    }
+
     addClick() {
-        if (this.activeMarker || !this.map) { return; }
+        this.hideActiveMarker();
+
+        if (!this.isInit) { return; }
+
         let self = this;
         this.moveCenter();
         this.activeMarker = new Marker(google.maps, this.map, {
             listener : {
                 dragend : (pos, marker) => {
-                    console.log(`lat : ${pos.lat()}, lng : ${pos.lng()}`);
                     let listener = {
                         success : (result, status, xhr) => {
                             marker.disdraggable();
@@ -142,13 +152,12 @@ export default class Map extends Component {
 
     curTargetClick() {
         this.doDrag = false;
-        if (this.isInitMap()) {
+        if (this.isInit) {
             this.moveCenter();
         }
     }
 
     getIfLogin(callback) {
-        console.log(`props.login = ${this.props.login}`);
         return this.props.login ? callback : this.openPop('login');
     }
 
