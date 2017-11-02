@@ -1,5 +1,6 @@
 package io.github.jistol.geosns.jpa.entry;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.github.jistol.geosns.type.LoginType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,6 +15,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Entity
 @Table(name = "user")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User implements Serializable {
     @Id
     @GeneratedValue

@@ -58,8 +58,24 @@ class Camera extends Component {
     }
 }
 
+const testFun = () => {
+    let map = {},
+        key1 = JSON.stringify({a:'a', b:'b'}),
+        key2 = JSON.stringify({a:'b', b:'b'});
+
+    map[key1] = 1;
+    map[key2] = 2;
+
+    console.log(map[JSON.stringify({a:'a', b:'b'})]);
+    console.log(map[JSON.stringify({a:'b', b:'b'})]);
+
+};
+
+
 ReactDOM.render(
     <Camera/>,
     $('#reactRoot')[0]
 );
+
+testFun();
 

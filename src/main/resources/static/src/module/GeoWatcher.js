@@ -12,11 +12,13 @@ export default class GeoWatcher {
     }
 
     start() {
+        console.log('watcher start');
         if (this.watchId) { return; }
 
         let _self = this;
         this.watchId = navigator.geolocation.watchPosition(
             (position) => {
+                console.log(`watchPosition : ${position.coords.latitude}, ${position.coords.longitude}`);
                 this.lat = position.coords.latitude;
                 this.lng = position.coords.longitude;
 
@@ -30,8 +32,11 @@ export default class GeoWatcher {
     }
 
     stop() {
-        navigator.geolocation.clearWatch(this.watchId);
-        this.watchId = undefined;
+        console.log('watcher stop');
+        if (this.watchId) {
+            navigator.geolocation.clearWatch(this.watchId);
+            this.watchId = undefined;
+        }
     }
 
     addListener(event) {

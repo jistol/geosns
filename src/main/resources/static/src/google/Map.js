@@ -5,20 +5,47 @@ import GeoWatcher from '../module/GeoWatcher';
 import LoginPop from '../module/LoginPop';
 import PostPop from '../module/PostPop';
 import User from './User';
+import PostLoader from '../module/PostLoader';
 
 export default class Map extends Component {
     constructor() {
         super();
         this.isInit = false;
         this.doDrag = false;
+        this.postLoader = undefined;
         this.watcher = new GeoWatcher();
         this.user = undefined;
         this.activeMarker = undefined;
-        this.markers = [];
         this._pop = {
             login : undefined,
             post : undefined
         };
+    }
+
+    init() {
+        let self = this;
+        if (!this.isInit) {
+            this.watcher.stop();
+            this.watcher.start();
+            this.watcher.addListener((lat, lng) => {
+                if (self.isInit) {
+                    // 지도 위치가 현재 위치와 같으며 초기화 되어 있는 경우
+                    // 계속 현재 이동 위치와 맵의 위치를 동기화 한다.
+                    if (!self.doDrag) {
+                        self.map.panTo({ lat : lat, lng : lng });
+                    }
+
+                    // 사용자 위치 이동
+                    if (this.user) {
+                        self.user.move(lat, lng);
+                    }
+                }
+            });
+
+            this.user = new User(google.maps, this.map, {});
+            this.postLoader = new PostLoader(this.map);
+        }
+        this.isInit = true;
     }
 
     render() {
@@ -51,24 +78,8 @@ export default class Map extends Component {
     }
 
     loadMap() {
-        let self = this;
-        this.watcher.start();
-        this.watcher.addListener((lat, lng) => {
-            if (self.isInit) {
-                // 지도 위치가 현재 위치와 같으며 초기화 되어 있는 경우
-                // 계속 현재 이동 위치와 맵의 위치를 동기화 한다.
-                if (!self.doDrag) {
-                    self.map.panTo({ lat : lat, lng : lng });
-                }
 
-                // 사용자 위치 이동
-                if (self.user) {
-                    self.user.move(lat, lng);
-                }
-            }
-        });
-
-        window[this.props.callback] = () => self.loadComplete();
+        window[this.props.callback] = (() => this.loadComplete()).bind(this);
         $.getScript(`/google/map/js?callback=${this.props.callback}`);
     }
 
@@ -87,7 +98,7 @@ export default class Map extends Component {
         });
 
         Object.keys(events).forEach((name) => {
-            self.map.addListener(name, events[name].bind(self));
+            self.map.addListener(name, events[name]);
         });
 
         // traffic layer
@@ -102,21 +113,19 @@ export default class Map extends Component {
         let self = this;
         return {
             click : () => {
-                self.hideActiveMarker();
+                self.removeActiveMarker();
             },
             dragend : () => {
-                this.doDrag = true;
+                self.doDrag = true;
             },
             tilesloaded : () => {
-                if (!this.user) {
-                    this.user = new User(google.maps, this.map, {});
-                }
-                this.isInit = true;
+                self.init();
+                self.postLoader.loadPosting();
             }
         };
     }
 
-    hideActiveMarker() {
+    removeActiveMarker() {
         if (this.activeMarker) {
             this.activeMarker.hide();
             this.activeMarker = undefined;
@@ -124,7 +133,7 @@ export default class Map extends Component {
     }
 
     addClick() {
-        this.hideActiveMarker();
+        this.removeActiveMarker();
 
         if (!this.isInit) { return; }
 
@@ -135,16 +144,14 @@ export default class Map extends Component {
                 dragend : (pos, marker) => {
                     let listener = {
                         success : (result, status, xhr) => {
-                            marker.disdraggable();
+                            marker.pinned();
+                            marker.options.postId = result.post.id;
                             self._pop['post'].close();
+                            self.postLoader.addMarker(pos.lat(), pos.lng(), marker);
                             self.activeMarker = undefined;
                         }
                     };
                     self.openPop('post')({ lat: pos.lat(), lng: pos.lng(), listener: listener });
-                },
-                complete : () => {
-                    self.markers.push(self.activeMarker);
-                    self.activeMarker = undefined;
                 }
             }
         });

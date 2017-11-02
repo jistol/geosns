@@ -7,15 +7,16 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Collection;
-import java.util.List;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "post")
-public class Post {
+public class Post implements Serializable {
     @Id
     @GeneratedValue
     private long id;
@@ -33,4 +34,7 @@ public class Post {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn
     private Collection<Attach> attaches;
+    @NotNull
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdDate;
 }

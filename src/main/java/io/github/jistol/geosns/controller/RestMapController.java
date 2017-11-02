@@ -2,6 +2,7 @@ package io.github.jistol.geosns.controller;
 
 import com.google.common.net.HttpHeaders;
 import io.github.jistol.geosns.jpa.entry.Post;
+import io.github.jistol.geosns.model.LatLngBound;
 import io.github.jistol.geosns.service.PostService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.Map;
 
 import static io.github.jistol.geosns.util.Cast.entry;
@@ -30,12 +32,19 @@ public class RestMapController {
     @Autowired private PostService postService;
 
     @PostMapping(value = "/post")
-    public ResponseEntity<Map<String, Object>> post(HttpSession httpSession,
+    public ResponseEntity<Map<String, Object>> savePosting(HttpSession httpSession,
                                     @RequestParam(name = "files", required = false) MultipartFile[] files,
                                     Post post) throws IOException, InvocationTargetException, IllegalAccessException {
-        postService.save(httpSession, post, files);
-        return ResponseEntity.ok(map(entry("code", HttpStatus.OK.value()), entry("msg", "success")));
+        Post saved = postService.save(httpSession, post, files);
+        return ResponseEntity.ok(map(entry("code", HttpStatus.OK.value()), entry("msg", "success"), entry("post", saved)));
     }
+
+    @GetMapping(value = "/post")
+    public ResponseEntity<Map<String, Object>> loadPosting(LatLngBound bound) {
+        List<Post> posts = postService.load(bound);
+        return ResponseEntity.ok(map(entry("code", HttpStatus.OK.value()), entry("posts", posts)));
+    }
+
 
     @GetMapping("/files/{filename:.+}")
     public ResponseEntity<Resource> serveFile(@PathVariable String filename) {

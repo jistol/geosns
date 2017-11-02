@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -48,6 +49,7 @@ public class OAuthSecurityConfig extends WebSecurityConfigurerAdapter {
             //.addFilterBefore(filter, CsrfFilter.class)
             .addFilterBefore(oauth2Filter(), BasicAuthenticationFilter.class)
             .authorizeRequests()
+                .antMatchers(HttpMethod.GET).permitAll()
                 .antMatchers("/demo/**","/google/**", "/", "/map", "/login/**",  "/dist/**", "/img/**", "/admin/**").permitAll()
                 .antMatchers("/browser/**", "/users", "/users/**", "/posts", "/posts/**", "/profile", "/profile/**").permitAll()
                 .anyRequest().authenticated()

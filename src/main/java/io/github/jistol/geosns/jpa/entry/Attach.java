@@ -9,13 +9,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "attach")
-public class Attach {
+public class Attach implements Serializable {
     @Id
     @GeneratedValue
     private long id;
