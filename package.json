@@ -16,6 +16,7 @@
     "babel-polyfill": "^6.26.0",
     "bootstrap-sass": "^3.3.7",
     "jquery": "^3.2.1",
+    "js-marker-clusterer": "^1.0.0",
     "react": "^16.0.0",
     "react-bootstrap": "^0.31.5",
     "react-dom": "^16.0.0",

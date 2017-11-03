@@ -43,7 +43,7 @@ export default class Map extends Component {
             });
 
             this.user = new User(google.maps, this.map, {});
-            this.postLoader = new PostLoader(this.map);
+            this.postLoader = new PostLoader(google.maps, this.map);
         }
         this.isInit = true;
     }
@@ -57,8 +57,8 @@ export default class Map extends Component {
             return (
                 <div className="full">
                     <div ref={node => this.target = node} className="full">loading...</div>
-                    <img src="/img/add.png" className="btn w-70 b-r-5 fixed" onClick={this.getIfLogin(this.addClick).bind(this)}/>
-                    <img src="/img/curTarget.png" className="btn w-65 t-l-5 fixed" onClick={this.curTargetClick.bind(this)}/>
+                    <img src="/img/map/add.png" className="btn w-70 b-r-5 fixed" onClick={this.getIfLogin(this.addClick).bind(this)}/>
+                    <img src="/img/map/target.png" className="btn w-65 t-l-5 fixed" onClick={this.curTargetClick.bind(this)}/>
                     <LoginPop ref={pop => this._pop.login = pop} />
                     <PostPop ref={pop => this._pop.post = pop} />
                 </div>
@@ -88,13 +88,16 @@ export default class Map extends Component {
         this.map = new google.maps.Map(this.target, {
             center: this.watcher.getPosition(),
             zoom: this.props.zoom,
+            maxZoom: this.props.zoom,
+            minZoom: this.props.zoom,
             language: this.props.language,
             scrollwheel: false,
             zoomControl: false,
             streetViewControl: false,
             rotateControl: false,
             mapTypeControl: false,
-            fullscreenControl: false
+            fullscreenControl: false,
+            disableDoubleClickZoom: true
         });
 
         Object.keys(events).forEach((name) => {
@@ -140,6 +143,7 @@ export default class Map extends Component {
         let self = this;
         this.moveCenter();
         this.activeMarker = new Marker(google.maps, this.map, {
+            animation: google.maps.Animation.DROP,
             listener : {
                 dragend : (pos, marker) => {
                     let listener = {

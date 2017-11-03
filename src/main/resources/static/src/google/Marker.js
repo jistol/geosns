@@ -12,10 +12,10 @@ export default class Marker {
             animation : null,
             icon : undefined,
             iconImg : {
-                editable : '/img/marker1.png',
-                pinned : '/img/marker2.png'
+                editable : '/img/map/marker-edit.png',
+                pinned : '/img/map/marker-fix.png'
             },
-            iconSize : { w : 60, h : 60 },
+            iconSize : { w : 40, h : 40 },
             initLat : center.lat(),
             initLng : center.lng(),
             isEditable : true,
@@ -28,7 +28,10 @@ export default class Marker {
             draggable: this.options.isEditable,
             animation: this.options.animation,
             icon : this.getIcon(this.options.isEditable),
-            position : {lat: this.options.initLat,lng: this.options.initLng}
+            position : {lat: this.options.initLat,lng: this.options.initLng},
+            zIndex: 50,
+            cursor: 'pointer',
+            opacity: 0.8
         });
 
         Object.entries(this.options.listener).forEach(kv => {

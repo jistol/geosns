@@ -35,9 +35,8 @@ base:
     path: /Users/jistol/IdeaProjects/github/geo-sns
     attach-path: ${base.path}/attaches
     #url: http://localhost:${server.port}/
-    url: http://localhost:8090/
-    #url: http://192.168.123.253:8080/
-    #url: http://192.168.1.181:8080/
+    #url: http://localhost:8090/
+    url: http://192.168.123.253:8080/
     service-url:
         map: ${base.url}map
 

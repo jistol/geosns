@@ -11,7 +11,7 @@ export default class LoginPop extends AbstractPop {
         return (
             <Modal.Body>
                 <div>
-                    <img src="/img/kakaoLogin.png" className="btn" onClick={this.kakaoLogin}/>
+                    <img src="/img/login/kakao.png" className="btn" onClick={this.kakaoLogin}/>
                 </div>
             </Modal.Body>
         );

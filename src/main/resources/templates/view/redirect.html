@@ -5,7 +5,7 @@
 </head>
 <body>
 <form id="redirectForm" th:attr="action=${callUrl}, target=${target?:'_self'}, method=${method?:'post'}">
-    <div th:each="item : ${params}" style="padding-bottom:10px;">
+    <div th:each="item : ${params}" style="display:none;padding-bottom:10px;">
         <input type="hidden" th:attr="id=${item.key}, name=${item.key}, value=${item.value}"/>
     </div>
 </form>

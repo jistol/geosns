@@ -1,14 +1,33 @@
 import $ from 'jquery';
+import 'js-marker-clusterer';
 import Marker from '../google/Marker.js'
 import { containLatLng } from "../util/Util"
 
 export default class PostLoader {
-    constructor(map) {
+    constructor(lib, map) {
         this.id = PostLoader.id++;
+        this.lib = lib;
         this.map = map;
         this.center = undefined;
         this.posts = {};
         this.init = false;
+
+        this.clusterOption = {
+            //imagePath: '/img/cluster/marker',
+            zoomOnClick: false,
+            gridSize: 50,
+            styles : [
+                { url: '/img/cluster/marker1.png', width: 50, height: 50, anchor : [-14], textColor: '#F99' },
+                { url: '/img/cluster/marker2.png', width: 50, height: 50, anchor : [-14], textColor: '#F77' },
+                { url: '/img/cluster/marker3.png', width: 50, height: 50, anchor : [-14], textColor: '#F55' },
+                { url: '/img/cluster/marker4.png', width: 50, height: 50, anchor : [-14], textColor: '#F33' },
+                { url: '/img/cluster/marker5.png', width: 50, height: 50, anchor : [-14], textColor: '#F00' }
+            ]
+        };
+        this.cluster = new MarkerClusterer(map, [], this.clusterOption);
+        this.lib.event.addListener(this.cluster, 'clusterclick', (cluster) => {
+            console.log(`click cluster : ${cluster.getMarkers().length}`)
+        });
     }
 
     isBreakBounds(latlngBound) {
@@ -131,6 +150,7 @@ export default class PostLoader {
         let key = JSON.stringify({ lat:lat, lng:lng}),
             arr = (this.posts[key]||[]);
         arr.push(marker);
+        this.cluster.addMarker(marker.marker);
         this.posts[key] = arr;
     }
 
@@ -139,6 +159,7 @@ export default class PostLoader {
             markers = (this.posts[key]||[]);
 
         markers.forEach(m => {
+            this.cluster.removeMarker(m.marker);
             m.hide();
         });
 

@@ -184,7 +184,7 @@ MultipartManager.defaultProps = {
         }
     },
     defaultImage: {
-        original: '/img/defaultImage.gif'
+        original: '/img/gallery/default.png'
     },
     lazyLoad: true,
     maxFileSize: 31457280,
