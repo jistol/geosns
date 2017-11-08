@@ -19,6 +19,10 @@ spring:
     jpa:
         hibernate.ddl-auto: none
         show-sql: true
+        orm:
+            path: queries
+            queries:
+                - ${spring.jpa.orm.path}/post.xml
     datasource:
         url: jdbc:h2:file:./db/devdb;AUTO_SERVER=TRUE
         username: geosns
@@ -37,6 +41,9 @@ base:
     #url: http://localhost:${server.port}/
     #url: http://localhost:8090/
     url: http://192.168.123.253:8080/
+    file-timeout: 360
+    key: okeJIWooiYoBFsji
+    iv: DeKQ6QcgCkZuj7aK
     service-url:
         map: ${base.url}map
 
@@ -45,10 +52,19 @@ google:
         url: https://maps.googleapis.com/
         key: AIzaSyB29edWOela2POZTB5sq3TLhgV9VT1jnt4
 
-kakao:
-    oauth:
-        login-url: /login/kakao
-        login-complete-url: /login/kakao/complete
+oauth:
+    login-url: /login/{0}
+    login-complete-url: /login/{0}/complete
+    google:
+        client :
+            clientId: 775431527027-dcuvmehptggrfnf9evutfe22pogu43gb.apps.googleusercontent.com
+            clientSecret: y6wrms3bsI56hexNCDMnvOUL
+            accessTokenUri: https://accounts.google.com/o/oauth2/token
+            userAuthorizationUri: https://accounts.google.com/o/oauth2/auth
+            scope: email, profile
+        resource:
+            userInfoUri: https://www.googleapis.com/oauth2/v2/userinfo
+    kakao:
         client :
             clientId: 1d830bc64b6d92395f2eb7bb8c5d31a6
             clientSecret: UqhBAsk4iEGoRpCix0oYCmx2Logak85n
@@ -56,3 +72,15 @@ kakao:
             userAuthorizationUri: https://kauth.kakao.com/oauth/authorize
         resource:
             userInfoUri: https://kapi.kakao.com/v1/user/me
+    facebook :
+        client :
+            clientId: 130675410858692
+            clientSecret: 3ec96d78cb6446d7e2c391f868a7173b
+            accessTokenUri: https://graph.facebook.com/oauth/access_token
+            userAuthorizationUri: https://www.facebook.com/dialog/oauth?display=popup
+            tokenName: oauth_token
+            authenticationScheme: query
+            clientAuthenticationScheme: form
+            scope: email, public_profile
+        resource:
+            userInfoUri: https://graph.facebook.com/me?fields=id,name,email,picture,cover

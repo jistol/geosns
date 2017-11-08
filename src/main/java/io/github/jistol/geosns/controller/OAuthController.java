@@ -4,6 +4,7 @@ import io.github.jistol.geosns.jpa.dao.UserDao;
 import io.github.jistol.geosns.jpa.entry.User;
 import io.github.jistol.geosns.type.LoginType;
 import io.github.jistol.geosns.util.SessionUtil;
+import io.github.jistol.geosns.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -38,6 +39,52 @@ public class OAuthController {
     }
 
     private enum SocialMapper {
+        google {
+            @Override public User loadUser(UserDao userDao, Map<String, Object> map) {
+                final String siteId = string(map.get("id"));
+                User user = userDao.findBySiteIdAndLoginType(siteId, LoginType.kakao);
+                if (user == null) {
+                    Boolean isEmailVerified = (Boolean)map.get("verified_email");
+                    user = new User();
+                    user.setSiteId(siteId);
+                    user.setLoginType(LoginType.google);
+                    user.setNickname((String)map.get("name"));
+                    if (isEmailVerified != null && isEmailVerified) {
+                        user.setEmail((String)map.get("email"));
+                    }
+                    user.setProfileImage((String)map.get("picture"));
+                    user.setThumbnailImage((String)map.get("picture"));
+
+                    userDao.save(user);
+                }
+
+                return user;
+            }
+        },
+        facebook {
+            @Override public User loadUser(UserDao userDao, Map<String, Object> map) {
+                final String siteId = string(map.get("id"));
+                User user = userDao.findBySiteIdAndLoginType(siteId, LoginType.kakao);
+                if (user == null) {
+                    Boolean isEmailVerified = (Boolean)map.get("verified_email");
+                    user = new User();
+                    user.setSiteId(siteId);
+                    user.setLoginType(LoginType.facebook);
+                    user.setNickname((String)map.get("name"));
+                    if (isEmailVerified != null && isEmailVerified) {
+                        user.setEmail((String)map.get("email"));
+                    }
+
+                    String url = (String)Util.getFromMap(map, "picture", "data", "url");
+                    user.setProfileImage(url);
+                    user.setThumbnailImage(url);
+
+                    userDao.save(user);
+                }
+
+                return user;
+            }
+        },
         kakao {
             @Override public User loadUser(UserDao userDao, Map<String, Object> map) {
                 final String siteId = string(map.get("id"));

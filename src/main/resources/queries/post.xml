@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd"
+                 version="2.0">
+    <named-query name="Post.findPost">
+        <query>SELECT p FROM Post p WHERE p.id = :id AND (p.scope IN ('PUB', 'FRD') OR (p.scope = 'PRV' AND p.user = :user ))</query>
+    </named-query>
+
+    <named-query name="Post.findBounds">
+        <query><![CDATA[
+            SELECT new map( p.id as id, p.lat as lat, p.lng as lng, SUBSTRING(p.message, 0, 20) as subject, p.user.nickname as nickname, p.user.thumbnailImage as thumbnailImage )
+            FROM Post p
+            WHERE p.lng >= :west
+            AND p.lng <= :east
+            AND p.lat <= :north
+            AND p.lat >= :south
+            AND (p.scope IN ('PUB', 'FRD') OR (p.scope = 'PRV' AND p.user = :user ))
+            ORDER BY p.createdDate DESC
+        ]]></query>
+    </named-query>
+
+    <named-query name="Post.findBoundsDateLine">
+        <query><![CDATA[
+            SELECT new map( p.id as id, p.lat as lat, p.lng as lng, SUBSTRING(p.message, 0, 20) as subject, p.user.nickname as nickname, p.user.thumbnailImage as thumbnailImage )
+            FROM Post p
+            WHERE p.lng <= :west
+            AND p.lng >= :east
+            AND p.lat <= :north
+            AND p.lat >= :south
+            AND (p.scope IN ('PUB', 'FRD') OR (p.scope = 'PRV' AND p.user = :user ))
+            ORDER BY p.createdDate DESC
+        ]]></query>
+    </named-query>
+</entity-mappings>

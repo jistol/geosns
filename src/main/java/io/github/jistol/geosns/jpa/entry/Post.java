@@ -1,8 +1,8 @@
 package io.github.jistol.geosns.jpa.entry;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.github.jistol.geosns.type.Scope;
+import lombok.*;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -31,10 +32,27 @@ public class Post implements Serializable {
     private Double lat;
     @Column(nullable = false)
     private Double lng;
+    @Enumerated(value = EnumType.STRING)
+    @Column(nullable = false)
+    private Scope scope;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn
     private Collection<Attach> attaches;
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
+    @NotNull
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedDate;
+
+    @Transient
+    private Collection<Map<String, Object>> attachInfo;
+
+    @Transient
+    private Collection<Long> attachIds;
+
+    public String getSubject() {
+        return message.substring(0, message.length() > 24 ? 24 : message.length());
+    }
 }

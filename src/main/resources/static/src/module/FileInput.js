@@ -5,14 +5,16 @@ export default class FileInput extends Component {
         super(props);
     }
 
+    renderIcon({src, imgWidth, imgHeight, cursor}) {
+        return (<img src={src} style={{width: imgWidth, height: imgHeight, cursor: cursor}}/>);
+    }
+
     render() {
         let { name, capture, accept, className, onChange, onClick } = this.props;
         return (
             <label className={className}>
                 {
-                    (this.props.icon || (({src, imgWidth, imgHeight, cursor}) => (
-                        <img src={src} style={{width: imgWidth, height: imgHeight, cursor: cursor}}/>
-                    )))(this.props)
+                    (this.props.icon || this.renderIcon)(this.props)
                 }
                 <input name={name} type="file" style={{display:'none'}} accept={accept} capture={capture} onChange={onChange} onClick={onClick} multiple={this.props.multiple}/>
             </label>

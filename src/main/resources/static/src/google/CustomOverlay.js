@@ -54,13 +54,14 @@ export default class CustomOverlay {
 
         Overlay.prototype.pxToNum = function(px) {
             return Number(px.replace('px', ''));
-        }
+        };
 
         Overlay.prototype.draw = function() {
-            var overlayProjection = this.getProjection();
-            var sw = overlayProjection.fromLatLngToDivPixel(self.bounds.getSouthWest());
-            var ne = overlayProjection.fromLatLngToDivPixel(self.bounds.getNorthEast());
-            var div = self.div;
+            let overlayProjection = this.getProjection(),
+                sw = overlayProjection.fromLatLngToDivPixel(self.bounds.getSouthWest()),
+                ne = overlayProjection.fromLatLngToDivPixel(self.bounds.getNorthEast()),
+                div = self.div;
+
             div.style.left = (sw.x - (this.pxToNum(self.options.width)/2)) + 'px';
             div.style.top = (ne.y - (this.pxToNum(self.options.height)/2)) + 'px';
             div.style.width = self.options.width;

@@ -3,13 +3,16 @@ import $ from 'jquery';
 import Marker from './Marker';
 import GeoWatcher from '../module/GeoWatcher';
 import LoginPop from '../module/LoginPop';
-import PostPop from '../module/PostPop';
+import PostInsertPop from '../post/PostInsertPop';
+import PostUpdatePop from '../post/PostUpdatePop';
+import ViewPop from '../post/ViewPop';
+import ListPop from '../post/ListPop';
 import User from './User';
 import PostLoader from '../module/PostLoader';
 
 export default class Map extends Component {
-    constructor() {
-        super();
+    constructor(...args) {
+        super(...args);
         this.isInit = false;
         this.doDrag = false;
         this.postLoader = undefined;
@@ -43,9 +46,31 @@ export default class Map extends Component {
             });
 
             this.user = new User(google.maps, this.map, {});
-            this.postLoader = new PostLoader(google.maps, this.map);
+            this.postLoader = new PostLoader(google.maps, this.map, {
+                onClick : this.onMarkerClick.bind(this),
+                onClusterClick : this.onClusterClick.bind(this)
+            });
         }
         this.isInit = true;
+    }
+
+    onItemClick(post) {
+        this.openPop('view')({ post: post });
+    }
+
+    onEdit(post) {
+        console.log(`viewPop edit - post : ${post.id}`);
+        this.openPop('postUpdate')({ post: post });
+    }
+
+    onMarkerClick(marker) {
+        console.log(`marker click - post : ${marker.getPost().id}`);
+        this.openPop('view')({ post: marker.getPost() });
+    }
+
+    onClusterClick(markers) {
+        console.log(`cluster click - marker.length : ${markers.length}`);
+        this.openPop('list')({ post: (markers||[]).map(marker => marker.getPost()) });
     }
 
     render() {
@@ -60,7 +85,10 @@ export default class Map extends Component {
                     <img src="/img/map/add.png" className="btn w-70 b-r-5 fixed" onClick={this.getIfLogin(this.addClick).bind(this)}/>
                     <img src="/img/map/target.png" className="btn w-65 t-l-5 fixed" onClick={this.curTargetClick.bind(this)}/>
                     <LoginPop ref={pop => this._pop.login = pop} />
-                    <PostPop ref={pop => this._pop.post = pop} />
+                    <PostInsertPop ref={pop => this._pop.postInsert = pop} />
+                    <PostUpdatePop ref={pop => this._pop.postUpdate = pop} />
+                    <ViewPop ref={pop => this._pop.view = pop} onEdit={this.onEdit.bind(this)}/>
+                    <ListPop ref={pop => this._pop.list = pop} onItemClick={this.onItemClick.bind(this)} />
                 </div>
             );
         }
@@ -147,15 +175,15 @@ export default class Map extends Component {
             listener : {
                 dragend : (pos, marker) => {
                     let listener = {
-                        success : (result, status, xhr) => {
+                        success : ({ post }, status, xhr) => {
                             marker.pinned();
-                            marker.options.postId = result.post.id;
-                            self._pop['post'].close();
+                            marker.addListener('click', () => self.onMarkerClick(marker));
+                            marker.setPost(post);
                             self.postLoader.addMarker(pos.lat(), pos.lng(), marker);
                             self.activeMarker = undefined;
                         }
                     };
-                    self.openPop('post')({ lat: pos.lat(), lng: pos.lng(), listener: listener });
+                    self.openPop('postInsert')({ lat: pos.lat(), lng: pos.lng(), listener: listener });
                 }
             }
         });

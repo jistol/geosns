@@ -47,8 +47,16 @@ public class Util {
         }
     }
 
+    public static <T> boolean contains(Collection<T> col, T dest) {
+        if (col == null) {
+            return false;
+        }
+
+        return col.contains(dest);
+    }
+
     public static String getCurrentTimeStamp() {
-        return new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
+        return new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
     }
 
     public static String getCurrentDate() {
@@ -89,5 +97,21 @@ public class Util {
         if (!isEmpty(param)) {
             consumer.accept(param);
         }
+    }
+
+    public static long calFromNow(long dest) {
+        return (System.currentTimeMillis() - dest) / 1000;
+    }
+
+    public static Object getFromMap(Map map, Object... pathList)
+    {
+        Map tempMap = null;
+        Object result = map;
+        for (Object path : pathList)
+        {
+            tempMap = (Map)result;
+            result = tempMap.get(path);
+        }
+        return result;
     }
 }

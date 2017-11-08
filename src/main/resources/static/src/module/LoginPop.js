@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Modal } from 'react-bootstrap';
+import { Modal, Button } from 'react-bootstrap';
 import AbstractPop from "./AbstractPop";
 
 export default class LoginPop extends AbstractPop {
@@ -8,10 +8,13 @@ export default class LoginPop extends AbstractPop {
     }
 
     renderContent() {
+        let self = this;
         return (
             <Modal.Body>
-                <div>
-                    <img src="/img/login/kakao.png" className="btn" onClick={this.kakaoLogin}/>
+                <div style={{padding:'10px'}}>
+                    <Button className="btn login google" bsSize="large" block onClick={() => self.login('kakao')}>Google로 로그인</Button>
+                    <Button className="btn login facebook" bsSize="large" block onClick={() => self.login('facebook')}>Facebook으로 로그인</Button>
+                    <Button className="btn login kakao" bsSize="large" block onClick={() => self.login('kakao')}>Kakao로 로그인</Button>
                 </div>
             </Modal.Body>
         );
@@ -21,8 +24,8 @@ export default class LoginPop extends AbstractPop {
         return 'login-pop-container';
     }
 
-    kakaoLogin() {
-        location.href = "/login/kakao";
+    login(social) {
+        location.href = `/login/${social}`;
     }
 
 }

@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import CustomOverlay from './CustomOverlay';
 
 export default class User {
@@ -8,8 +7,8 @@ export default class User {
         let options = {
             url: '/img/map/user.gif',
             style: {
-                width: 60,
-                height: 60
+                width: 30,
+                height: 30
             }
         };
         this.overlay = new CustomOverlay(googleMaps, map, options);

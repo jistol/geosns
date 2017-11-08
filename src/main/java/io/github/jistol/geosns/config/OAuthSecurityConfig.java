@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +39,7 @@ import java.util.Map;
 @EnableWebSecurity
 @EnableOAuth2Client
 public class OAuthSecurityConfig extends WebSecurityConfigurerAdapter {
-    @Autowired @Qualifier("kakaoOAuthFilter") private Filter kakaoOAuthFilter;
+    @Autowired @Qualifier("socialOAuthFilterList") private Collection<Filter> socialOAuthFilterList;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -54,7 +55,9 @@ public class OAuthSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/browser/**", "/users", "/users/**", "/posts", "/posts/**", "/profile", "/profile/**").permitAll()
                 .anyRequest().authenticated()
             .and()
-                .headers().frameOptions().disable()
+                .headers()
+                    .frameOptions().disable()
+                    .cacheControl().disable()
 //            .and()
 //                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
             .and()
@@ -64,7 +67,7 @@ public class OAuthSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
                 .logout()
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/")
+                .logoutSuccessUrl("/map")
                 .deleteCookies("SESSION")
                 .invalidateHttpSession(true);
     }
@@ -72,7 +75,7 @@ public class OAuthSecurityConfig extends WebSecurityConfigurerAdapter {
     private Filter oauth2Filter() {
         CompositeFilter filter = new CompositeFilter();
         List<Filter> filters = new ArrayList<>();
-        filters.add(kakaoOAuthFilter);
+        filters.addAll(socialOAuthFilterList);
         filter.setFilters(filters);
         return filter;
     }

@@ -58,24 +58,32 @@ class Camera extends Component {
     }
 }
 
-const testFun = () => {
-    let map = {},
-        key1 = JSON.stringify({a:'a', b:'b'}),
-        key2 = JSON.stringify({a:'b', b:'b'});
+class Parent {
+    constructor() {
+    }
 
-    map[key1] = 1;
-    map[key2] = 2;
+    setName(name) {
+        this.name = name;
+    }
+}
 
-    console.log(map[JSON.stringify({a:'a', b:'b'})]);
-    console.log(map[JSON.stringify({a:'b', b:'b'})]);
+class Child extends Parent {
+    constructor() {
+        super();
+    }
 
-};
+    print() {
+        console.log(`print : ${this.name}`);
+    }
+}
 
+let child = new Child();
+child.setName('child');
+child.print();
 
 ReactDOM.render(
     <Camera/>,
     $('#reactRoot')[0]
 );
 
-testFun();
 

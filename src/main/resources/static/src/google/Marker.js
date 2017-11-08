@@ -20,7 +20,7 @@ export default class Marker {
             initLng : center.lng(),
             isEditable : true,
             listener : {},
-            postId : -1
+            post : {}
         }, options);
 
         this.marker = new this.lib.Marker({
@@ -33,6 +33,7 @@ export default class Marker {
             cursor: 'pointer',
             opacity: 0.8
         });
+        this.marker.id = this.id;
 
         Object.entries(this.options.listener).forEach(kv => {
             self.marker.addListener(kv[0], self.wrapEvent(self, kv[1]));
@@ -43,6 +44,21 @@ export default class Marker {
        return (...args) => {
            event(self.marker.getPosition(), self, ...args);
        };
+    }
+
+    addListener(type, action) {
+        this.marker.addListener(type, this.wrapEvent(this, action));
+    }
+
+    getPost() {
+        return (this.options && this.options.post)? this.options.post : null;
+    }
+
+    setPost({ id, lat, lng, subject, user}) {
+        this.options.post = {
+            id : id, lat : lat, lng : lng, subject : subject,
+            nickname: user.nickname, thumbnailImage: user.thumbnailImage
+        };
     }
 
     getIcon(editable) {

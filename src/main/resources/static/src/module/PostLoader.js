@@ -4,13 +4,16 @@ import Marker from '../google/Marker.js'
 import { containLatLng } from "../util/Util"
 
 export default class PostLoader {
-    constructor(lib, map) {
+    constructor(lib, map, listener) {
+        let self = this;
         this.id = PostLoader.id++;
         this.lib = lib;
         this.map = map;
         this.center = undefined;
         this.posts = {};
         this.init = false;
+        this.listener = listener || { onClusterClick : () => {}, onClick : () => {} };
+        this.markerMap = {};
 
         this.clusterOption = {
             //imagePath: '/img/cluster/marker',
@@ -26,7 +29,8 @@ export default class PostLoader {
         };
         this.cluster = new MarkerClusterer(map, [], this.clusterOption);
         this.lib.event.addListener(this.cluster, 'clusterclick', (cluster) => {
-            console.log(`click cluster : ${cluster.getMarkers().length}`)
+            let markers = cluster.getMarkers().map(m => self.markerMap[m.id]);
+            self.listener.onClusterClick(markers);
         });
     }
 
@@ -95,12 +99,12 @@ export default class PostLoader {
         }
 
         let bound = this.getLatLngBound();
-        console.log(`[${this.id}]loadPosting ${$.param(bound)}`);
+        // console.log(`[${this.id}]loadPosting ${$.param(bound)}`);
         if (!this.isBreakBounds(bound)) {
             return;
         }
 
-        console.log(`[${this.id}]do loadPosting`);
+        // console.log(`[${this.id}]do loadPosting`);
 
         this.center = { lat : bound.lat, lng : bound.lng };
         $.ajax({
@@ -116,19 +120,21 @@ export default class PostLoader {
     }
 
     showPost(post) {
-        let marker = new Marker(google.maps, this.map, {
+        let self = this,
+            marker = new Marker(google.maps, this.map, {
             listener : {
                 click : (pos, marker) => {
-                    console.log(`click marker lat : ${pos.lat()}, lng : ${pos.lng()}, marker id : ${marker.id}`);
+                    // console.log(`click marker lat : ${pos.lat()}, lng : ${pos.lng()}, marker id : ${marker.id}`);
+                    self.listener.onClick(marker);
                 }
             },
             initLat : post.lat,
             initLng : post.lng,
             isEditable : false,
-            postId : post.id
+            post : post
         });
 
-        console.log(`post show lat : ${post.lat}, lng : ${post.lng}, marker : ${marker}`);
+        // console.log(`post show lat : ${post.lat}, lng : ${post.lng}, marker : ${marker}`);
         return marker;
     }
 
@@ -137,7 +143,7 @@ export default class PostLoader {
             posts = this.posts[key];
         if(posts && Array.isArray(posts)) {
             for (let i=0,ilen=posts.length ; i<ilen ; i++) {
-                if (posts[i].options.postId == postId) {
+                if (posts[i].options.post.id == postId) {
                     return true;
                 }
             }
@@ -151,6 +157,7 @@ export default class PostLoader {
             arr = (this.posts[key]||[]);
         arr.push(marker);
         this.cluster.addMarker(marker.marker);
+        this.markerMap[marker.id] = marker;
         this.posts[key] = arr;
     }
 
@@ -160,6 +167,7 @@ export default class PostLoader {
 
         markers.forEach(m => {
             this.cluster.removeMarker(m.marker);
+            delete this.markerMap[m.id];
             m.hide();
         });
 
@@ -168,11 +176,11 @@ export default class PostLoader {
 
     success(result, status, xhr) {
         if (!result.posts || result.posts == null) {
-            console.log('post not exist');
+            // console.log('post not exist');
             return;
         }
 
-        console.log(`post length : ${result.posts.length}`);
+        // console.log(`post length : ${result.posts.length}`);
 
         let self = this,
             { west, east, north, south } = this.getLatLngBound(),
@@ -185,9 +193,9 @@ export default class PostLoader {
             let key = JSON.parse(kv[0]),
                 {lat, lng} = key;
 
-            console.log(`remove target - lat : ${lat}, lng : ${lng}, west : ${west}, north : ${north}, east : ${east}, south : ${south}`);
+            // console.log(`remove target - lat : ${lat}, lng : ${lng}, west : ${west}, north : ${north}, east : ${east}, south : ${south}`);
             if (!containLatLng(lat, lng, west, north, east, south)) {
-                console.log('removed');
+                // console.log('removed');
                 self.removeMarker(lat, lng);
             }
         });
@@ -221,3 +229,4 @@ export default class PostLoader {
 }
 
 PostLoader.id = 1;
+

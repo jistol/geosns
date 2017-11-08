@@ -14,5 +14,8 @@ public class BaseProps {
     private String path;
     private String attachPath;
     private String url;
+    private String key;
+    private String iv;
+    private long fileTimeout;
     private Map<String, String> serviceUrl = new HashMap<>();
 }

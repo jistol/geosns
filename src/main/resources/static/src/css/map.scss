@@ -21,6 +21,32 @@ div#root {
 .btn {
     cursor: pointer;
 
+    &.login {
+        font-weight: bold;
+        font-size: 15px;
+        padding: 12px;
+        border: 0;
+        box-shadow: 1px 1px 5px #666;
+
+        &.google {
+            background-color: rgb(223, 75, 51);
+            color: #FFFFFF;
+            margin-bottom: 10px;
+        }
+
+        &.facebook {
+            background-color: rgb(89, 117, 177);
+            color: #FFFFFF;
+            margin-bottom: 10px;
+        }
+
+        &.kakao {
+            background-color: rgb(252, 235, 1);
+            color: rgb(60, 30, 30);
+        }
+    }
+
+
     &.fixed {
         z-index: 999;
         position: fixed;
@@ -45,9 +71,24 @@ div#root {
     }
 }
 
-.login-pop-container {
+.pop-container {
     width : 90%;
     z-index: 1000;
+
+    &.modal-dialog {
+        position: absolute;
+        top: 50%;
+        left: 47%;
+        transform: translate(-50%, -50%) !important;
+    }
+
+    & .modal-body {
+        padding: 5px;
+    }
+}
+
+.login-pop-container {
+    @extend .pop-container;
 
     & div {
         z-index: 1000;
@@ -57,33 +98,18 @@ div#root {
         width: 100%;
         cursor: pointer;
     }
-
-    &.modal-dialog {
-        position: absolute;
-        top: 50%;
-        left: 47%;
-        transform: translate(-50%, -50%) !important;
-    }
-
-    & .modal-body {
-        padding: 5px;
-    }
 }
 
 .post-pop-container {
-    width : 90%;
-    z-index: 1000;
+    @extend .pop-container;
+}
 
-    &.modal-dialog {
-        position: absolute;
-        top: 50%;
-        left: 47%;
-        transform: translate(-50%, -50%) !important;
-    }
+.view-pop-container {
+    @extend .pop-container;
+}
 
-    & .modal-body {
-        padding: 5px;
-    }
+.list-pop-container {
+    @extend .pop-container;
 }
 
 $bg-color-thin: rgba(220, 220, 220, 0.88);
@@ -93,8 +119,6 @@ $bg-color: rgba(245, 245, 245, 0.36);
 $react-icon-color: #575757;
 $react-icon-color-hover: #333333;
 
-
-
 .react-icon {
     color: $react-icon-color;
     width: 45px;
@@ -103,6 +127,12 @@ $react-icon-color-hover: #333333;
     &:hover {
         color: $react-icon-color-hover;
     }
+
+    &.m {
+        width: 30px;
+        height: 30px;
+    }
+
     &.sm {
         width: 25px;
         height: 25px;
@@ -111,6 +141,7 @@ $react-icon-color-hover: #333333;
 
 .bg-base {
     background-color: $bg-color;
+    width: 100%
 }
 
 .pop-btn {
@@ -143,4 +174,16 @@ $react-icon-color-hover: #333333;
 #errorMsg .panel-body {
     padding: 0;
     color: #d14556;
+}
+
+.file-input {
+    margin-bottom: 0;
+}
+
+.b-0 {
+    border: 0;
+}
+
+.m-5 {
+    margin: 5px;
 }

@@ -8,6 +8,7 @@ export default class AbstractPop extends Component {
         this.state = {
             show : false
         };
+        this.options = {};
     }
 
     renderContent() {
@@ -32,8 +33,17 @@ export default class AbstractPop extends Component {
         safeFx(this.options.onHide)();
     }
 
+    beforeOpen(...args) {
+        console.log('beforeOpen');
+        return true;
+    }
+
     open(options) {
-        this.setState(Object.assign({show: true}));
+        console.log('open');
+        if (!this.beforeOpen(options)) {
+            return;
+        }
+        this.setState({show: true});
         this.options = options || {};
     }
 
