@@ -1,0 +1,38 @@
+@function size($start, $end) {
+    $size : ();
+    @for $i from $start through $end {
+        $value : $i + 0;
+        $size : append($size, $value);
+    }
+    @return $size;
+}
+
+@function getPx($value) {
+    @if $value == 0 {
+        @return $value;
+    } @else {
+        @return $value + 0px;
+    }
+}
+
+$size : size(0, 100);
+$position : ('l':'left', 'r':'right', 't':'top', 'b':'bottom');
+$nameMap : ('px-m':'margin', 'px-p':'padding');
+
+@mixin generate($nameMap : (), $position : (), $size : ()) {
+    @each $preKey, $preValue in $nameMap {
+        @each $px in $size {
+            .#{$preKey}-#{$px} {
+                #{$preValue} : getPx($px);
+            }
+            @each $sufKey, $sufValue in $position {
+                .#{$preKey}#{$sufKey}-#{$px} {
+                    #{$preValue}-#{$sufValue} : getPx($px);
+                }
+            }
+        }
+    }
+}
+
+
+@include generate($nameMap, $position, $size);

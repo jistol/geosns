@@ -1,13 +1,21 @@
 package io.github.jistol.geosns.util;
 
 import com.google.common.base.CaseFormat;
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.util.NumberUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -113,5 +121,17 @@ public class Util {
             result = tempMap.get(path);
         }
         return result;
+    }
+
+    public static List<String> fileList(String directory) {
+        List<String> fileNames = Lists.newArrayList();
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(directory))) {
+            for (Path path : directoryStream) {
+                if (equals("xml", FilenameUtils.getExtension(path.getFileName().toString()))) {
+                    fileNames.add(path.toString());
+                }
+            }
+        } catch (IOException ex) {}
+        return fileNames;
     }
 }

@@ -12,7 +12,7 @@ export default class LoginPop extends AbstractPop {
         return (
             <Modal.Body>
                 <div style={{padding:'10px'}}>
-                    <Button className="btn login google" bsSize="large" block onClick={() => self.login('kakao')}>Google로 로그인</Button>
+                    <Button className="btn login google" bsSize="large" block onClick={() => self.login('google')}>Google로 로그인</Button>
                     <Button className="btn login facebook" bsSize="large" block onClick={() => self.login('facebook')}>Facebook으로 로그인</Button>
                     <Button className="btn login kakao" bsSize="large" block onClick={() => self.login('kakao')}>Kakao로 로그인</Button>
                 </div>

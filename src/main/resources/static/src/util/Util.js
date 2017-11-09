@@ -10,6 +10,4 @@ const containLatLng = (lat, lng, w, n, e, s) => {
 
 const nTobrJsx = (txt) => txt.split('\n').map((item, key) => (<span key={key}>{item}<br/></span>));
 
-
-
 export { safeFx, safeObj, safeArr, containLatLng, nTobrJsx };

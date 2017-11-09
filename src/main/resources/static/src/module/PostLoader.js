@@ -175,8 +175,8 @@ export default class PostLoader {
     }
 
     success(result, status, xhr) {
-        if (!result.posts || result.posts == null) {
-            // console.log('post not exist');
+        if (!result.post || result.post == null) {
+            console.log('post not exist');
             return;
         }
 
@@ -202,7 +202,7 @@ export default class PostLoader {
 
         // 현재 view에 해당되지 않는 post만 추출후 나머지 생성
         // 초기화 시에는 현재 위치의 view도 보여줌
-        result.posts.forEach(post => {
+        result.post.forEach(post => {
             let lat = post.lat,
                 lng = post.lng,
                 exclude = this.isRequiredInit() && containLatLng(lat, lng, sw.lng(), ne.lat(), ne.lng(), sw.lat()),

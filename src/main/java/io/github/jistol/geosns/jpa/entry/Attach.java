@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.http.MediaType;
 
 import javax.persistence.Entity;
@@ -26,4 +27,6 @@ public class Attach implements Serializable {
     private MediaType type;
     private String path;
     private Long size;
+//    private Long deltaX;
+//    private Long deltaY;
 }

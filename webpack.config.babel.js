@@ -49,7 +49,8 @@ module.exports = (() => {
             devPort = 8090,
             proxyPort = 8080,
             demoEntry = {
-                'demoFileupload': src('/demo/fileupload.js')
+                'demoFileupload': src('/demo/fileupload.js'),
+                'demoImageView': src('/demo/imageView.js')
             };
 
         config.entry = Object.assign({}, demoEntry, config.entry);

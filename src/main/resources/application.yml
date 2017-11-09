@@ -23,6 +23,7 @@ spring:
             path: queries
             queries:
                 - ${spring.jpa.orm.path}/post.xml
+                - ${spring.jpa.orm.path}/friend.xml
     datasource:
         url: jdbc:h2:file:./db/devdb;AUTO_SERVER=TRUE
         username: geosns
@@ -39,8 +40,8 @@ base:
     path: /Users/jistol/IdeaProjects/github/geo-sns
     attach-path: ${base.path}/attaches
     #url: http://localhost:${server.port}/
-    #url: http://localhost:8090/
-    url: http://192.168.123.253:8080/
+    url: http://localhost:8090/
+    #url: http://192.168.123.253:8080/
     file-timeout: 360
     key: okeJIWooiYoBFsji
     iv: DeKQ6QcgCkZuj7aK

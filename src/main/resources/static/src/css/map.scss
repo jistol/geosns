@@ -1,5 +1,6 @@
 @import "~bootstrap-sass/assets/stylesheets/bootstrap-sprockets";
 @import "~bootstrap-sass/assets/stylesheets/bootstrap";
+@import "./base.scss";
 
 html, body {
     height: 100%;
@@ -112,6 +113,7 @@ div#root {
     @extend .pop-container;
 }
 
+$bg-color-line: rgb(232, 229, 229);
 $bg-color-thin: rgba(220, 220, 220, 0.88);
 $bg-color-deep: #cecece;
 $bg-color: rgba(245, 245, 245, 0.36);
@@ -164,6 +166,20 @@ $react-icon-color-hover: #333333;
     }
 }
 
+.profile {
+    &.img {
+        border-radius: 50%;
+        max-width: 40px;
+        max-height: 40px;
+    }
+
+    &.box {
+        border: 0 solid $bg-color-line;
+        border-bottom-width: 1px;
+        padding: 5px 3px 5px 3px;
+    }
+}
+
 .panel-error-msg  {
     padding: 0;
     margin: 5px;
@@ -184,6 +200,3 @@ $react-icon-color-hover: #333333;
     border: 0;
 }
 
-.m-5 {
-    margin: 5px;
-}

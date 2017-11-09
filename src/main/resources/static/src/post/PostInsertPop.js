@@ -129,7 +129,7 @@ export default class PostInsertPop extends AbstractPop {
                             </FormGroup>
                         </Form>
                     </div>
-                    <ButtonToolbar className="m-5">
+                    <ButtonToolbar className="px-m-5">
                         <ButtonGroup style={{float:'left'}} bsSize="xsmall">
                             <Button className="b-0">
                                 <FileInput capture="camera" accept="image/*" icon={camera} onChange={this.onChange.bind(this)}/>

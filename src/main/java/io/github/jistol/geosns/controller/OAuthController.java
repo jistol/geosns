@@ -12,6 +12,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpSession;
@@ -42,7 +43,7 @@ public class OAuthController {
         google {
             @Override public User loadUser(UserDao userDao, Map<String, Object> map) {
                 final String siteId = string(map.get("id"));
-                User user = userDao.findBySiteIdAndLoginType(siteId, LoginType.kakao);
+                User user = userDao.findBySiteIdAndLoginType(siteId, LoginType.google);
                 if (user == null) {
                     Boolean isEmailVerified = (Boolean)map.get("verified_email");
                     user = new User();
@@ -64,7 +65,7 @@ public class OAuthController {
         facebook {
             @Override public User loadUser(UserDao userDao, Map<String, Object> map) {
                 final String siteId = string(map.get("id"));
-                User user = userDao.findBySiteIdAndLoginType(siteId, LoginType.kakao);
+                User user = userDao.findBySiteIdAndLoginType(siteId, LoginType.facebook);
                 if (user == null) {
                     Boolean isEmailVerified = (Boolean)map.get("verified_email");
                     user = new User();

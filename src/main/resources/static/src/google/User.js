@@ -7,8 +7,8 @@ export default class User {
         let options = {
             url: '/img/map/user.gif',
             style: {
-                width: 30,
-                height: 30
+                width: 20,
+                height: 20
             }
         };
         this.overlay = new CustomOverlay(googleMaps, map, options);

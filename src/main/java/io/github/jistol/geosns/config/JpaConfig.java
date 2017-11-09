@@ -33,9 +33,7 @@ public class JpaConfig extends HibernateJpaAutoConfiguration {
 
     @Bean
     @Override
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-            EntityManagerFactoryBuilder factoryBuilder)
-    {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(EntityManagerFactoryBuilder factoryBuilder) {
         final LocalContainerEntityManagerFactoryBean ret = super.entityManagerFactory(factoryBuilder);
         ret.setMappingResources(ormProps.getQueries());
         return ret;

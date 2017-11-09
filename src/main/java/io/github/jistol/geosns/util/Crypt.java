@@ -52,7 +52,7 @@ public class Crypt implements Serializable {
         return new String(Base64.getUrlDecoder().decode(encStr), CHAR_ENCODING);
     }
 
-    public String encrypt(String plain, Function<Exception, RuntimeException> exception) {
+    public String encrypt(String plain, Function<Exception, ? extends RuntimeException> exception) {
         try {
             return encrypt(plain);
         } catch (Exception e) {
@@ -60,7 +60,7 @@ public class Crypt implements Serializable {
         }
     }
 
-    public String decrypt(String encStr, Function<Exception, RuntimeException> exception) {
+    public String decrypt(String encStr, Function<Exception, ? extends RuntimeException> exception) {
         try {
             return decrypt(encStr);
         } catch (Exception e) {
@@ -68,7 +68,7 @@ public class Crypt implements Serializable {
         }
     }
 
-    public String urlEncrypt(String plain, Function<Exception, RuntimeException> exception) {
+    public String urlEncrypt(String plain, Function<Exception, ? extends RuntimeException> exception) {
         try {
             return urlEncrypt(plain);
         } catch (Exception e) {

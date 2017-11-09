@@ -17,9 +17,6 @@ export default class ImageViewer extends Component {
         this._gallery = null;
     }
 
-    componentDidUpdate() {
-    }
-
     renderItem(item) {
         let { fileView } = this.state;
         return (

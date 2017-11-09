@@ -52,6 +52,12 @@ public class Post implements Serializable {
     @Transient
     private Collection<Long> attachIds;
 
+    @Transient
+    private boolean isOwner;
+
+    @Transient
+    private String encId; // encrypted id
+
     public String getSubject() {
         return message.substring(0, message.length() > 24 ? 24 : message.length());
     }

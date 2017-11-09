@@ -15,8 +15,8 @@ export default class ListPop extends AbstractPop {
         let self = this;
         return (
             <ListGroupItem href="javascript:;" key={post.id} onClick={() => self.onItemClick(post)} style={{margin:'0', padding:'5px'}}>
-                <span style={{padding:'5px'}}>
-                    <img style={{borderRadius:'50%', maxWidth:'40px', maxHeight: '40px'}} src={post.thumbnailImage}></img>
+                <span className="px-p-5">
+                    <img className="profile" src={post.thumbnailImage}></img>
                 </span>
                 {post.subject}...
             </ListGroupItem>
