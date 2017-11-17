@@ -1,10 +1,9 @@
 package io.github.jistol.geosns.jpa.entry;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import io.github.jistol.geosns.model.Meta;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.http.MediaType;
 
 import javax.persistence.Entity;
@@ -27,6 +26,12 @@ public class Attach implements Serializable {
     private MediaType type;
     private String path;
     private Long size;
-//    private Long deltaX;
-//    private Long deltaY;
+    private Long deltaX;
+    private Long deltaY;
+
+    public Attach setup(Meta meta) {
+        this.setDeltaX(meta.getDeltaX());
+        this.setDeltaY(meta.getDeltaY());
+        return this;
+    }
 }

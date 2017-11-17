@@ -45,8 +45,9 @@ export default class PostUpdatePop extends PostInsertPop {
         formData.append('lat', lat);
         formData.append('lng', lng);
         formData.append("id", this.options.post.id);
-        this._mng.appendAttachIds('attachIds', formData);
-        this._mng.appendFiles('files', formData);
+        //this._mng.appendAttachIds('attachIds', formData);
+        //this._mng.appendFiles('files', formData);
+        this._mng.appendAll(formData);
         this.submit(formData, '/rest/map/post', 'put');
     }
 }

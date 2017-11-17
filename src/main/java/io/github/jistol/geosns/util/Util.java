@@ -3,22 +3,19 @@ package io.github.jistol.geosns.util;
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
-import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.NumberUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
+
+import static io.github.jistol.geosns.util.Cast.string;
 
 public class Util {
     public static Map<String, Object> jsonToMap(String json) {
@@ -33,12 +30,12 @@ public class Util {
         return new Gson().toJson(map);
     }
 
-    public static boolean equals(String str1, String str2) {
-        if (str1 == null && str2 == null) {
+    public static boolean equals(Object obj1, Object obj2) {
+        if (obj1 == null && obj2 == null) {
             return false;
         }
 
-        return str1 == null? str2.equals(str1) : str1.equals(str2);
+        return obj1 == null? obj2.equals(obj1) : obj1.equals(obj2);
     }
 
     public static boolean isEmpty(Object value) {
@@ -92,6 +89,10 @@ public class Util {
         return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, snake);
     }
 
+    public static String camelToSnake(String camel) {
+        return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, camel);
+    }
+
     public static <T extends Number> T getNumber(String num, Class<T> clazz) {
         Double d = Double.parseDouble(num);
         return NumberUtils.convertNumberToTargetClass(d, clazz);
@@ -123,15 +124,82 @@ public class Util {
         return result;
     }
 
-    public static List<String> fileList(String directory) {
-        List<String> fileNames = Lists.newArrayList();
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(directory))) {
-            for (Path path : directoryStream) {
-                if (equals("xml", FilenameUtils.getExtension(path.getFileName().toString()))) {
-                    fileNames.add(path.toString());
-                }
-            }
-        } catch (IOException ex) {}
-        return fileNames;
+
+    public static <K, V> Map<K, V> joinMap(Map<K, V> map1, Map<K, V> map2) {
+        Map<K, V> tmp = new HashMap<>();
+        tmp.putAll(map1);
+        tmp.putAll(map2);
+        return tmp;
+    }
+
+    public static <T, E extends RuntimeException> void assertThat(T expect, Supplier<T> cond, E ex) {
+        assertThat(expect, cond.get(), ex);
+    }
+
+    public static <T, E extends RuntimeException> void assertThat(T expect, T cond, E ex) {
+        if (!equals(cond, expect)) {
+            throw ex;
+        }
+    }
+
+    public static <E extends RuntimeException> void assertFalse(Supplier<Boolean> cond, E ex) {
+        assertThat(false, cond, ex);
+    }
+
+    public static <E extends RuntimeException> void assertTrue(Supplier<Boolean> cond, E ex) {
+        assertThat(true, cond, ex);
+    }
+
+    public static <E extends RuntimeException> void assertFalse(Boolean cond, E ex) {
+        assertThat(false, cond, ex);
+    }
+
+    public static <E extends RuntimeException> void assertTrue(Boolean cond, E ex) {
+        assertThat(true, cond, ex);
+    }
+
+
+    private static final String IP_ADDRESS = "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})";
+    private static final String SLASH_FORMAT = IP_ADDRESS + "/(\\d{1,3})";
+    private static final Pattern addressPattern = Pattern.compile(IP_ADDRESS);
+    private static final Pattern cidrPattern = Pattern.compile(SLASH_FORMAT);
+
+    public static boolean isIpAddress(String ip) {
+        return addressPattern.matcher(ip).matches();
+    }
+
+    public static boolean isIpRange(String ip) {
+        return cidrPattern.matcher(ip).matches();
+    }
+
+    public static boolean isIpInRange(String ip, List<String> list, BiFunction<Exception, String[], ? extends RuntimeException> func) {
+        return Optional.ofNullable(list)
+                .orElse(Lists.newArrayList()).stream()
+                .filter(setIp -> {
+                    try {
+                        boolean result = isIpInRange(ip, isIpAddress(setIp)? setIp+"/32" : setIp);
+                        return result;
+                    } catch (Exception e) {
+                        throw func.apply(e, new String[]{setIp, ip});
+                    }
+                })
+                .findFirst().isPresent();
+    }
+
+    public static boolean isIpInRange(String ip, String range) {
+        String[] info = range.split("/");
+        int len = Integer.parseInt(info[1]);
+        if (len < 1) { return true; }
+
+        String dest = ipToBinaryString(info[0]);
+        String src = ipToBinaryString(ip);
+        return equals(dest.substring(0, len), src.substring(0, len));
+    }
+
+    public static String ipToBinaryString(String ipString) {
+        String[] ipList = ipString.split("\\.");
+        return Stream.of(ipList)
+                .map(ip -> StringUtils.leftPad(Integer.toBinaryString(Integer.parseInt(ip)), 8, "0"))
+                .reduce((s1, s2) -> string(s1, s2)).orElse(null);
     }
 }

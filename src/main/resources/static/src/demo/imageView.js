@@ -2,59 +2,37 @@
 
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import Draggable from 'react-draggable';
-import $ from 'jquery';
+import EditImgView from '../module/EditImgView';
 import './demo.scss';
 
 class App extends Component {
     constructor(...args) {
         super(...args);
-        this.state = {
-            delta : { x : 0, y : 0 }
-        };
-        this.url = 'http://image.zdnet.co.kr/2017/10/02/lejj_Lum5eBTRUz1z7t0.jpg';
+        this.src = 'http://image.itdonga.com/files/2015/10/02/a0mk1.jpg'
     }
 
-    onDrag(e, ui) {
-        const {x, y} = this.state.delta;
-        this.setState({
-            delta: {
-                x: x + ui.deltaX,
-                y: y + ui.deltaY,
-            }
-        });
+    onDrag(x, y, e, ui) {
+        console.log(`onDrag x : ${x}, y : ${y}`);
+        //this.log.innerHTML = `x : ${x}, y : ${y}`;
     }
 
-    onStop(e, ui) {
-        let $result = $('#result'),
-            { x, y } = this.state.delta;
-        $result.css('background-image', `url(${this.url})`);
-        $result.css('background-position', `${x}px ${y}px`);
+    onStop(x, y, e, ui) {
+        console.log(`onStop x : ${x}, y : ${y}`);
+        ReactDOM.unmountComponentAtNode(document.getElementById("result"));
+        ReactDOM.render(<App disabled={true} deltaX={x} deltaY={y}/>, document.getElementById('result'));
     }
 
     render() {
-        let { delta }  = this.state,
-            style = {
-                width:'300px',
-                height:'300px',
-                backgroundImage:`url(${this.url})`
-            },
-            vStyle = {
-                position:'fixed',
-                top:'10px',
-                left:'10px'
-            };
         return (
-            <Draggable handle=".handle" bounds={{top:-100, left:-100, right:0, bottom:0}} onDrag={this.onDrag.bind(this)} onStop={this.onStop.bind(this)}>
-                <div className="handle" style={style}>
-                    <div style={vStyle}>
-                        x: {delta.x.toFixed(0)}, y: {delta.y.toFixed(0)}
-                    </div>
-                </div>
-            </Draggable>
-
+            <EditImgView width={300} height={300} disabled={this.props.disabled} src={this.src} deltaX={this.props.deltaX} deltaY={this.props.deltaY} onDrag={this.onDrag.bind(this)} onStop={this.onStop.bind(this)}/>
         );
     }
 }
 
-ReactDOM.render(<App/>, document.getElementById('view'));
+App.defaultProps = {
+    disabled : false,
+    deltaX : 0,
+    deltaY : 0
+};
+
+ReactDOM.render(<App deltaX={-100}/>, document.getElementById('view'));

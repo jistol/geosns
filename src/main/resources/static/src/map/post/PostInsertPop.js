@@ -1,9 +1,9 @@
 import React from 'react';
 import { Modal, Form, FormGroup, FormControl, InputGroup, Panel, ButtonToolbar, ButtonGroup, Button } from 'react-bootstrap';
-import AbstractPop from "../module/AbstractPop";
-import FileInput from '../module/FileInput';
-import MultipartManager from '../module/MultipartManager';
-import ScopeSelect from '../module/ScopeSelect';
+import AbstractPop from "../../module/AbstractPop";
+import FileInput from '../../module/FileInput';
+import MultipartManager from '../../module/MultipartManager';
+import ScopeSelect from './ScopeSelect';
 import $ from 'jquery';
 import MdSend from 'react-icons/lib/md/send';
 import MdInsertPhoto from 'react-icons/lib/md/insert-photo';
@@ -43,7 +43,12 @@ export default class PostInsertPop extends AbstractPop {
     }
 
     showError(msg, timeout = 3000) {
-        this.setState({ formGroupState: 'error', errorOpen: true, errorMsg: msg });
+        let errorMsg = (
+            <div className="px-p-5">
+                {msg}
+            </div>
+        );
+        this.setState({ formGroupState: 'error', errorOpen: true, errorMsg: errorMsg });
         setTimeout((() => {
             this.setState({ errorOpen: false, errorMsg: '' });
         }).bind(this), timeout);
@@ -58,7 +63,8 @@ export default class PostInsertPop extends AbstractPop {
             { lat, lng } = this.options;
         formData.append('lat', lat);
         formData.append('lng', lng);
-        this._mng.appendFiles('files', formData);
+        //this._mng.appendFiles('files', formData);
+        this._mng.appendAll(formData);
         this.submit(formData, '/rest/map/post', 'post');
     }
 
@@ -115,7 +121,7 @@ export default class PostInsertPop extends AbstractPop {
             <Modal.Body style={{padding:'0'}}>
                 <div>
                     <MultipartManager ref={ ref => this._mng = ref }/>
-                    <Panel id="errorMsg" collapsible expanded={this.state.errorOpen} className="panel-error-msg">{this.state.errorMsg}</Panel>
+                    <Panel id="errorMsg" collapsible expanded={this.state.errorOpen} className="panel-error-msg msg">{this.state.errorMsg}</Panel>
                     <div style={{minHeight:'100px',maxWidth:'100%', maxHeight:'100%'}}>
                         <Form horizontal>
                             <FormGroup style={{margin: '0 auto'}} validationState={this.state.formGroupState}>

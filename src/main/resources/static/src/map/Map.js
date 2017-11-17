@@ -3,12 +3,15 @@ import $ from 'jquery';
 import Marker from './Marker';
 import GeoWatcher from '../module/GeoWatcher';
 import LoginPop from '../module/LoginPop';
-import PostInsertPop from '../post/PostInsertPop';
-import PostUpdatePop from '../post/PostUpdatePop';
-import ViewPop from '../post/ViewPop';
-import ListPop from '../post/ListPop';
+import PostInsertPop from './post/PostInsertPop';
+import PostUpdatePop from './post/PostUpdatePop';
+import ViewPop from './post/ViewPop';
+import ListPop from './post/ListPop';
 import User from './User';
-import PostLoader from '../module/PostLoader';
+import PostLoader from './post/PostLoader';
+import '../css/map.scss';
+import MapMenu from "./MapMenu";
+import {MdAdd} from "react-icons/lib/md/index";
 
 export default class Map extends Component {
     constructor(...args) {
@@ -73,6 +76,12 @@ export default class Map extends Component {
         this.openPop('list')({ post: (markers||[]).map(marker => marker.getPost()) });
     }
 
+    onMapMenuClick(e, btnType) {
+        switch(btnType) {
+            case 'myLocation' : this.curTargetClick(); break;
+        }
+    }
+
     render() {
         if (!navigator.geolocation) {
             return (
@@ -82,8 +91,8 @@ export default class Map extends Component {
             return (
                 <div className="full">
                     <div ref={node => this.target = node} className="full">loading...</div>
-                    <img src="/img/map/add.png" className="btn w-70 b-r-5 fixed" onClick={this.getIfLogin(this.addClick).bind(this)}/>
-                    <img src="/img/map/target.png" className="btn w-65 t-l-5 fixed" onClick={this.curTargetClick.bind(this)}/>
+                    <MdAdd className="react-icon-menu fixed rb-5" onClick={this.getIfLogin(this.addClick).bind(this)}/>
+                    <MapMenu rightTop ref={menu => this.menu = menu} container={this} onClick={this.onMapMenuClick.bind(this)}/>
                     <LoginPop ref={pop => this._pop.login = pop} />
                     <PostInsertPop ref={pop => this._pop.postInsert = pop} />
                     <PostUpdatePop ref={pop => this._pop.postUpdate = pop} />
@@ -106,13 +115,16 @@ export default class Map extends Component {
     }
 
     loadMap() {
-
         window[this.props.callback] = (() => this.loadComplete()).bind(this);
         $.getScript(`/google/map/js?callback=${this.props.callback}`);
     }
 
     loadComplete() {
         let self = this, events = this.getEvents();
+
+        //this.target.width = "100%";
+        //this.target.height = "100%";
+
         this.map = new google.maps.Map(this.target, {
             center: this.watcher.getPosition(),
             zoom: this.props.zoom,
@@ -145,6 +157,7 @@ export default class Map extends Component {
         return {
             click : () => {
                 self.removeActiveMarker();
+                self.menu.hide();
             },
             dragend : () => {
                 self.doDrag = true;

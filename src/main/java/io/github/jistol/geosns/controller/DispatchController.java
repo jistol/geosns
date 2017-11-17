@@ -15,7 +15,7 @@ import java.util.Map;
 @Slf4j
 @Controller
 public class DispatchController {
-    @RequestMapping({"/map", "/map/index", "/map/main"})
+    @RequestMapping({"/map", "/map/index", "/map/main", "/my"})
     public ModelAndView map(HttpSession session) {
         AbstractAuthenticationToken auth = (AbstractAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         log.debug("/map -> isAuthenticated : {}, grant : {}", auth.isAuthenticated(), auth.getAuthorities());
@@ -30,7 +30,7 @@ public class DispatchController {
             });
         }
 
-        return new ModelAndView("view/map")
+        return new ModelAndView("view/index")
                 .addObject("loginUser", SessionUtil.loadUser(session));
     }
 }

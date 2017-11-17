@@ -1,10 +1,10 @@
 import React from 'react';
 import $ from 'jquery';
-import AbstractPop from '../module/AbstractPop';
-import ImageViewer from '../module/ImageViewer';
+import AbstractPop from '../../module/AbstractPop';
+import ImgViewer from '../../module/ImgViewer';
 import { MdCreate } from 'react-icons/lib/md';
 import { Modal, Panel, ButtonToolbar, ButtonGroup, Button } from 'react-bootstrap';
-import { nTobrJsx } from '../util/Util';
+import { nTobrJsx } from '../../util/Util';
 
 export default class ViewPop extends AbstractPop {
     constructor(props) {
@@ -18,9 +18,9 @@ export default class ViewPop extends AbstractPop {
 
     init() {
         $('#message').val('');
-        if (this.imageViewer) {
+        if (this.imgViewer) {
             console.log('image viewer clear');
-            this.imageViewer.clear();
+            this.imgViewer.clear();
         }
         this.setState({ post : {} });
     }
@@ -61,14 +61,16 @@ export default class ViewPop extends AbstractPop {
     success(result, status, xhr) {
         let post = (result.post || {}),
             { editStyle } = this.state,
-            attaches = (post.attachInfo||[]).map(info => info.url),
+            attaches = post.attachInfo||[],
             existAttach = attaches.length > 0;
 
+        console.log('ViewPop.js attaches : ' + attaches.length);
+
         if (existAttach) {
-            this.imageViewer.add(...attaches);
-            this.imageViewer.show();
+            this.imgViewer.add(...attaches);
+            this.imgViewer.show();
         } else {
-            this.imageViewer.hide();
+            this.imgViewer.hide();
         }
 
         post.message = nTobrJsx(post.message);
@@ -114,7 +116,7 @@ export default class ViewPop extends AbstractPop {
             <Modal.Body style={{padding: '0'}}>
                 <div>
                     { this.state.profile }
-                    <ImageViewer ref={ref => this.imageViewer = ref} />
+                    <ImgViewer ref={ref => this.imgViewer = ref} disabled={true}/>
                     <Panel style={this.props.msgStyle}>
                         { this.state.post.message }
                     </Panel>

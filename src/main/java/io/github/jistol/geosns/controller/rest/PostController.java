@@ -38,16 +38,16 @@ public class PostController {
 
     @PostMapping("")
     public ResponseEntity<Map<String, Object>> savePost(HttpSession httpSession,
-                                    @RequestParam(name = "files", required = false) MultipartFile[] files,
-                                    Post post) throws IOException, InvocationTargetException, IllegalAccessException {
+                                                        @RequestParam(name = "files", required = false) MultipartFile[] files,
+                                                        Post post) throws IOException, InvocationTargetException, IllegalAccessException {
         Post saved = postService.save(httpSession, post, files);
         return success(entry("post", saved));
     }
 
     @PutMapping("")
     public ResponseEntity<Map<String, Object>> updateePost(HttpSession httpSession,
-                                                        @RequestParam(name = "files", required = false) MultipartFile[] files,
-                                                        Post updatePost) throws IOException, InvocationTargetException, IllegalAccessException {
+                                                            @RequestParam(name = "files", required = false) MultipartFile[] files,
+                                                            Post updatePost) throws IOException, InvocationTargetException, IllegalAccessException {
         Post saved = postService.update(httpSession, updatePost, files);
         return success(entry("post", saved));
     }
@@ -71,8 +71,7 @@ public class PostController {
     }
 
     @InitBinder
-    public void enumScopeBinding(WebDataBinder binder)
-    {
+    public void enumScopeBinding(WebDataBinder binder) {
         binder.registerCustomEditor(Scope.class, new PropertyEditorSupport() {
             @Override public void setAsText(String text) throws IllegalArgumentException
             {

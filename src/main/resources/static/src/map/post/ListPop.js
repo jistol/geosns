@@ -1,5 +1,5 @@
 import React from 'react';
-import AbstractPop from "../module/AbstractPop";
+import AbstractPop from "../../module/AbstractPop";
 import { Modal, ListGroup, ListGroupItem } from "react-bootstrap";
 
 export default class ListPop extends AbstractPop {

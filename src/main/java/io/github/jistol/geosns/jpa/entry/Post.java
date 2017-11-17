@@ -1,8 +1,11 @@
 package io.github.jistol.geosns.jpa.entry;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.github.jistol.geosns.model.Meta;
 import io.github.jistol.geosns.type.Scope;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
@@ -10,6 +13,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -38,7 +42,7 @@ public class Post implements Serializable {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn
-    private Collection<Attach> attaches;
+    private List<Attach> attaches;
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
@@ -53,7 +57,10 @@ public class Post implements Serializable {
     private Collection<Long> attachIds;
 
     @Transient
-    private boolean isOwner;
+    private Collection<Meta> metas;
+
+    @Transient
+    private boolean owner;
 
     @Transient
     private String encId; // encrypted id

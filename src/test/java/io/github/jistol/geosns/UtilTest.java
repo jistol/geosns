@@ -1,12 +1,13 @@
 package io.github.jistol.geosns;
 
+import io.github.jistol.geosns.model.Meta;
 import io.github.jistol.geosns.util.Util;
 import org.junit.Test;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.util.NumberUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Date;
@@ -49,7 +50,30 @@ public class UtilTest {
         File f = Paths.get("/Users/jistol/IdeaProjects/github/geo-sns/src/main/resources/application.yml").toFile();
         FileInputStream fis = new FileInputStream(f);
         System.out.println("length:" + f.length() + ", channel:" + fis.getChannel().size());
+    }
 
+    @Test
+    public void lambdaTest() {
+        System.out.println(lambdaBean());
+        System.out.println(anoClassBean());
 
+        System.out.println(lambdaBean() instanceof Converter);
+        System.out.println(anoClassBean() instanceof Converter);
+
+        System.out.println(lambdaBean().getClass().getName());
+        System.out.println(anoClassBean().getClass().getName());
+    }
+
+    public Converter<String, Meta> lambdaBean() {
+        return source -> Util.jsonToBean(source, Meta.class);
+    }
+
+    public Converter<String, Meta> anoClassBean() {
+        return new Converter<String, Meta>() {
+            @Override
+            public Meta convert(String source) {
+                return Util.jsonToBean(source, Meta.class);
+            }
+        };
     }
 }

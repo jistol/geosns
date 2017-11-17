@@ -13,7 +13,7 @@ module.exports = (() => {
         config = {
             entry : {
                 // map
-                'map': src('/apps/map.js')
+                'index': src('/index.js')
             },
             output : {
                 path : path.join(basePath, 'dist'),

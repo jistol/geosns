@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import 'js-marker-clusterer';
-import Marker from '../google/Marker.js'
-import { containLatLng } from "../util/Util"
+import Marker from '../Marker.js'
+import { containLatLng } from "../../util/Util"
 
 export default class PostLoader {
     constructor(lib, map, listener) {
