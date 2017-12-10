@@ -3,7 +3,7 @@ package io.github.jistol.geosns.controller;
 import io.github.jistol.geosns.jpa.dao.UserDao;
 import io.github.jistol.geosns.jpa.entry.User;
 import io.github.jistol.geosns.type.LoginType;
-import io.github.jistol.geosns.util.SessionUtil;
+import io.github.jistol.geosns.type.Session;
 import io.github.jistol.geosns.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,6 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpSession;
@@ -35,7 +34,7 @@ public class OAuthController {
             log.debug("key[{}]:{}", key, value);
         });
 
-        SessionUtil.storeUser(session, SocialMapper.valueOf(social).loadUser(userDao, map));
+        Session.storeUser(SocialMapper.valueOf(social).loadUser(userDao, map));
         return new RedirectView("/map");
     }
 

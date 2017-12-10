@@ -8,16 +8,32 @@ class MapMenuItem extends Component {
         let self = this;
         return (
             <ul style={{listStyle:'none'}}>
-                <li>
-                    <MdMyLocation className={this.props.iconClass} onClick={(e) => self.props.onClick(e,'myLocation')}/>
-                </li>
-                <li>
-                    <NavLink to="/my" className="item">
-                        <MdPerson className={this.props.iconClass}/>
-                    </NavLink>
-                </li>
+                <li>{this.renderMyLocation()}</li>
+                <li>{this.renderPerson()}</li>
             </ul>
         );
+    }
+
+    renderMyLocation() {
+        let self = this;
+        return (
+            <MdMyLocation className={this.props.iconClass} onClick={(e) => self.props.onClick(e,'myLocation')}/>
+        );
+    }
+
+    renderPerson() {
+        let self = this;
+        if (this.props.login) {
+            return (
+                <NavLink to="/setup" className="item">
+                    <MdPerson className={this.props.iconClass}/>
+                </NavLink>
+            );
+        } else {
+            return (
+                <MdPerson className={this.props.iconClass} onClick={(e) => self.props.onClick(e,'login')}/>
+            );
+        }
     }
 }
 
@@ -46,7 +62,7 @@ export default class MapMenu extends Component {
                     onHide={this.hide.bind(this)}
                     placement="bottom"
                     container={this}>
-                    <MapMenuItem onClick={this.props.onClick} iconClass={iconClass}/>
+                    <MapMenuItem onClick={this.props.onClick} iconClass={iconClass} login={this.props.login}/>
                 </Overlay>
             </div>
         );

@@ -6,8 +6,8 @@ import io.github.jistol.geosns.jpa.entry.Attach;
 import io.github.jistol.geosns.jpa.entry.User;
 import io.github.jistol.geosns.type.BaseProps;
 import io.github.jistol.geosns.type.Code;
+import io.github.jistol.geosns.type.Session;
 import io.github.jistol.geosns.util.Crypt;
-import io.github.jistol.geosns.util.SessionUtil;
 import io.github.jistol.geosns.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -87,7 +87,7 @@ public class StorageService {
     }
 
     public String getSignedKey(HttpServletRequest req, Attach attach) throws Exception {
-        final User user = SessionUtil.loadUser(req.getSession());
+        final User user = Session.loadUser();
         final String custIp = Util.getClientIpAddr(req);
         final Long timeout = System.currentTimeMillis() + (baseProps.getFileTimeout() * 1000);
         return baseCrypt.encrypt(string(user == null? anonymous : user.getId(), "|", custIp, "|", timeout, "|", attach.getId()));
@@ -102,7 +102,7 @@ public class StorageService {
     }
 
     public Attach getAttach(HttpServletRequest req, String encKey) throws Exception {
-        final User user = SessionUtil.loadUser(req.getSession());
+        final User user = Session.loadUser();
         final String decKey = baseCrypt.decrypt(encKey);
         final String[] keys = decKey.split("[|]");
 

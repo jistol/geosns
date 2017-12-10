@@ -5,6 +5,7 @@ import ImgViewer from '../../module/ImgViewer';
 import { MdCreate } from 'react-icons/lib/md';
 import { Modal, Panel, ButtonToolbar, ButtonGroup, Button } from 'react-bootstrap';
 import { nTobrJsx } from '../../util/Util';
+import Profile from "../../module/Profile";
 
 export default class ViewPop extends AbstractPop {
     constructor(props) {
@@ -82,7 +83,8 @@ export default class ViewPop extends AbstractPop {
         this.setState({
             post : post,
             editStyle: editStyle,
-            profile : this.renderProfile(post)
+            profileImg : post.user.thumbnailImage,
+            profileNickname : post.user.nickname
         });
     }
 
@@ -99,23 +101,11 @@ export default class ViewPop extends AbstractPop {
         });
     }
 
-    renderProfile(post) {
-        console.log(`renderProfile`);
-        return (
-            <div className="profile box">
-                <span className="px-pr-5">
-                    <img className="profile img" src={post.user.thumbnailImage} onClick={this.profileClick.bind(this)}></img>
-                </span>
-                {post.user.nickname}
-            </div>
-        );
-    }
-
     renderContent() {
         return (
             <Modal.Body style={{padding: '0'}}>
                 <div>
-                    { this.state.profile }
+                    <Profile src={this.state.profileImg} nickname={this.state.profileNickname} onClick={this.profileClick.bind(this)}/>
                     <ImgViewer ref={ref => this.imgViewer = ref} disabled={true}/>
                     <Panel style={this.props.msgStyle}>
                         { this.state.post.message }

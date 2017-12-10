@@ -11,17 +11,17 @@ public class GeoSnsRuntimeException extends RuntimeException {
 
     public GeoSnsRuntimeException(Exception e) {
         super(e);
-        code = Code.etcError.getCode();
+        code = Code.etcError.code;
     }
 
     public GeoSnsRuntimeException(Code code) {
-        super(code.getMessage());
-        this.code = code.getCode();
+        super(code.message);
+        this.code = code.code;
     }
 
     public GeoSnsRuntimeException(Code code, String message) {
         super(message);
-        this.code = code.getCode();
+        this.code = code.code;
     }
 
     public static Function<Exception, ? extends GeoSnsRuntimeException> func() {

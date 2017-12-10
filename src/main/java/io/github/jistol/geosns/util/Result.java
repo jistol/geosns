@@ -12,11 +12,12 @@ import static io.github.jistol.geosns.util.Cast.map;
 public class Result {
     public static ResponseEntity<Map<String, Object>> success(Map.Entry... entries) {
         Map<String, Object> map = map(entries);
-        return ResponseEntity.ok(map(map, entry("code", Code.success.getCode()), entry("msg", Code.success.getMessage())));
+        map.putAll(Code.success.toMap());
+        return ResponseEntity.ok(map);
     }
 
     public static ResponseEntity<Map<String, Object>> byCode(HttpStatus status, Code code) {
-        return ResponseEntity.status(status).body(map(entry("code", code.getCode()), entry("msg", code.getMessage())));
+        return ResponseEntity.status(status).body(code.toMap());
     }
 
     public static ResponseEntity<Map<String, Object>> badRequest(Code code) {

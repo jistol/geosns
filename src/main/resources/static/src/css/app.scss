@@ -51,9 +51,14 @@ div#root {
 .fixed {
     z-index: 999;
     position: fixed;
-    &.rb-5 {
-        bottom: 5px;
-        right: 5px;
+    &.rb-10 {
+        bottom: 10px;
+        right: 10px;
+    }
+
+    &.lt-0 {
+        top: 0;
+        left: 0;
     }
 }
 
@@ -104,8 +109,11 @@ $bg-color-deep: #cecece;
 $bg-color: rgba(245, 245, 245, 0.36);
 $bg-color-menu: #64d076;
 $bg-color-err: rgba(138, 51, 17, 0.36);
+$bg-color-nav: rgba(100, 208, 118, 0.2);
 
-$react-icon-color: #575757;
+$line-color-nav: rgba(37, 162, 43, 0.35);
+
+$react-icon-color: #64d076;
 $react-icon-color-menu: #FFFFFF;
 $react-icon-color-hover: #333333;
 
@@ -176,9 +184,16 @@ $react-icon-color-hover: #333333;
 
     &.box {
         border: 0 solid $bg-color-line;
-        border-bottom-width: 1px;
+        // border-bottom-width: 1px;
         padding: 5px 3px 5px 3px;
     }
+}
+
+.nav-header {
+    padding: 5px;
+    background-color: $bg-color-nav;
+    width: 100%;
+    border-bottom: 1px solid $line-color-nav;
 }
 
 .panel-error-msg  {

@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import $ from 'jquery';
 import Marker from './Marker';
-import GeoWatcher from '../module/GeoWatcher';
 import LoginPop from '../module/LoginPop';
 import PostInsertPop from './post/PostInsertPop';
 import PostUpdatePop from './post/PostUpdatePop';
@@ -9,7 +8,6 @@ import ViewPop from './post/ViewPop';
 import ListPop from './post/ListPop';
 import User from './User';
 import PostLoader from './post/PostLoader';
-import '../css/map.scss';
 import MapMenu from "./MapMenu";
 import {MdAdd} from "react-icons/lib/md/index";
 
@@ -19,7 +17,7 @@ export default class Map extends Component {
         this.isInit = false;
         this.doDrag = false;
         this.postLoader = undefined;
-        this.watcher = new GeoWatcher();
+        this.watcher = this.props.watcher;
         this.user = undefined;
         this.activeMarker = undefined;
         this._pop = {
@@ -31,9 +29,10 @@ export default class Map extends Component {
     init() {
         let self = this;
         if (!this.isInit) {
-            this.watcher.stop();
-            this.watcher.start();
-            this.watcher.addListener((lat, lng) => {
+            this.watcher.addListener('position', (lat, lng) => {
+                self.map.panTo({ lat : lat, lng : lng });
+            });
+            this.watcher.addListener('watch', (lat, lng) => {
                 if (self.isInit) {
                     // 지도 위치가 현재 위치와 같으며 초기화 되어 있는 경우
                     // 계속 현재 이동 위치와 맵의 위치를 동기화 한다.
@@ -79,6 +78,7 @@ export default class Map extends Component {
     onMapMenuClick(e, btnType) {
         switch(btnType) {
             case 'myLocation' : this.curTargetClick(); break;
+            case 'login' : this.openPop('login')(); break;
         }
     }
 
@@ -90,9 +90,9 @@ export default class Map extends Component {
         } else {
             return (
                 <div className="full">
-                    <div ref={node => this.target = node} className="full">loading...</div>
-                    <MdAdd className="react-icon-menu fixed rb-5" onClick={this.getIfLogin(this.addClick).bind(this)}/>
-                    <MapMenu rightTop ref={menu => this.menu = menu} container={this} onClick={this.onMapMenuClick.bind(this)}/>
+                    <div ref={node => this.target = node} className="full"></div>
+                    <MdAdd className="react-icon-menu fixed rb-10" onClick={this.getIfLogin(this.addClick).bind(this)}/>
+                    <MapMenu rightTop ref={menu => this.menu = menu} container={this} onClick={this.onMapMenuClick.bind(this)} login={this.props.login}/>
                     <LoginPop ref={pop => this._pop.login = pop} />
                     <PostInsertPop ref={pop => this._pop.postInsert = pop} />
                     <PostUpdatePop ref={pop => this._pop.postUpdate = pop} />
@@ -104,14 +104,30 @@ export default class Map extends Component {
     }
 
     componentDidMount() {
-        if (!this.map) {
+        this.target.innerHTML = "loading...";
+        if (!this.isLoadScript()) {
             this.loadMap();
+        } else {
+            this.loadComplete();
         }
     }
 
     moveCenter() {
-        //this.map.panTo({ lat : this.watcher.lat, lng : this.watcher.lng });
         this.map.panTo(this.watcher.getPosition());
+    }
+
+    isLoadScript() {
+        let scripts = $('script');
+        for (let i=0,ilen=scripts.length ; i<ilen ; i++) {
+            let script = scripts[i];
+            console.log(`script.src = ${script.src}`);
+            if (script.src.indexOf(`https://maps.googleapis.com`) != -1) {
+                console.log(`check isLoadScript - result : true`);
+                return true;
+            }
+        }
+        console.log(`check isLoadScript - result : false`);
+        return false;
     }
 
     loadMap() {
@@ -121,9 +137,6 @@ export default class Map extends Component {
 
     loadComplete() {
         let self = this, events = this.getEvents();
-
-        //this.target.width = "100%";
-        //this.target.height = "100%";
 
         this.map = new google.maps.Map(this.target, {
             center: this.watcher.getPosition(),
@@ -144,6 +157,8 @@ export default class Map extends Component {
             self.map.addListener(name, events[name]);
         });
 
+        this.moveCenter();
+
         // traffic layer
         /*
         // ref : https://developers.google.com/maps/documentation/javascript/examples/layer-traffic?hl=ko
@@ -161,8 +176,11 @@ export default class Map extends Component {
             },
             dragend : () => {
                 self.doDrag = true;
+                self.menu.hide();
             },
             tilesloaded : () => {
+                let center = this.map.getCenter();
+                console.log(`event - tilesloaded - lat : ${center.lat()}, lng : ${center.lng()}`);
                 self.init();
                 self.postLoader.loadPosting();
             }
@@ -216,8 +234,9 @@ export default class Map extends Component {
     openPop(name) {
         let self = this;
         return ((options) => {
-            options.onHide = () => self._pop[name].close();
-            self._pop[name].open(options);
+            let opts = options || {};
+            opts.onHide = () => self._pop[name].close();
+            self._pop[name].open(opts);
         }).bind(this);
     }
 }

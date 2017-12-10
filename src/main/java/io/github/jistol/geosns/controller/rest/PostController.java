@@ -8,7 +8,7 @@ import io.github.jistol.geosns.service.PostService;
 import io.github.jistol.geosns.service.StorageService;
 import io.github.jistol.geosns.type.Code;
 import io.github.jistol.geosns.type.Scope;
-import io.github.jistol.geosns.util.SessionUtil;
+import io.github.jistol.geosns.type.Session;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -37,31 +37,29 @@ public class PostController {
     @Autowired private StorageService storageService;
 
     @PostMapping("")
-    public ResponseEntity<Map<String, Object>> savePost(HttpSession httpSession,
-                                                        @RequestParam(name = "files", required = false) MultipartFile[] files,
+    public ResponseEntity<Map<String, Object>> savePost(@RequestParam(name = "files", required = false) MultipartFile[] files,
                                                         Post post) throws IOException, InvocationTargetException, IllegalAccessException {
-        Post saved = postService.save(httpSession, post, files);
+        Post saved = postService.save(post, files);
         return success(entry("post", saved));
     }
 
     @PutMapping("")
-    public ResponseEntity<Map<String, Object>> updateePost(HttpSession httpSession,
-                                                            @RequestParam(name = "files", required = false) MultipartFile[] files,
-                                                            Post updatePost) throws IOException, InvocationTargetException, IllegalAccessException {
-        Post saved = postService.update(httpSession, updatePost, files);
+    public ResponseEntity<Map<String, Object>> updatePost(@RequestParam(name = "files", required = false) MultipartFile[] files,
+                                                           Post updatePost) throws IOException, InvocationTargetException, IllegalAccessException {
+        Post saved = postService.update(updatePost, files);
         return success(entry("post", saved));
     }
 
     @GetMapping("")
     public ResponseEntity<Map<String, Object>> loadPost(HttpSession session, LatLngBound bound) {
-        User user = SessionUtil.loadUser(session);
+        User user = Session.loadUser();
         List<Map<String, Object>> posts = postService.load(user, bound);
         return success(entry("post", posts));
     }
 
     @GetMapping("/view")
     public ResponseEntity<Map<String, Object>> viewPost(HttpServletRequest req, PostForm postForm) {
-        User user = SessionUtil.loadUser(req.getSession());
+        User user = Session.loadUser();
         Post post = postService.view(req, user, postForm);
         if (post == null) {
             return badRequest(Code.postViewFail);

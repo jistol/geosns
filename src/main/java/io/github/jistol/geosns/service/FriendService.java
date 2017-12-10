@@ -2,12 +2,10 @@ package io.github.jistol.geosns.service;
 
 import io.github.jistol.geosns.exception.GeoSnsRuntimeException;
 import io.github.jistol.geosns.jpa.dao.FriendDao;
-import io.github.jistol.geosns.jpa.dao.UserDao;
 import io.github.jistol.geosns.jpa.entry.Friend;
 import io.github.jistol.geosns.jpa.entry.User;
-import io.github.jistol.geosns.type.LoginType;
+import io.github.jistol.geosns.type.Session;
 import io.github.jistol.geosns.util.Crypt;
-import io.github.jistol.geosns.util.SessionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -20,7 +18,7 @@ public class FriendService {
     @Autowired private FriendDao friendDao;
 
     public boolean request(HttpSession session, String encId) {
-        User user = SessionUtil.loadUser(session);
+        User user = Session.loadUser();
         Long friendId = Long.parseLong(baseCrypt.decrypt(encId, GeoSnsRuntimeException.func()));
         Friend friend = friendDao.findFriend(friendId, user);
         if (friend == null) {

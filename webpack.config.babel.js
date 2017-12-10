@@ -13,7 +13,7 @@ module.exports = (() => {
         config = {
             entry : {
                 // map
-                'index': src('/index.js')
+                'app': src('/App.js')
             },
             output : {
                 path : path.join(basePath, 'dist'),
@@ -50,7 +50,8 @@ module.exports = (() => {
             proxyPort = 8080,
             demoEntry = {
                 'demoFileupload': src('/demo/fileupload.js'),
-                'demoImageView': src('/demo/imageView.js')
+                'demoImageView': src('/demo/imageView.js'),
+                'demoTest': src('/demo/test.js')
             };
 
         config.entry = Object.assign({}, demoEntry, config.entry);

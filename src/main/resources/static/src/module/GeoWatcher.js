@@ -1,7 +1,7 @@
 
 export default class GeoWatcher {
     constructor() {
-        this.events = [];
+        this.events = {};
         this.watchId = undefined;
         this.lat = 0;
         this.lng = 0;
@@ -12,23 +12,34 @@ export default class GeoWatcher {
     }
 
     start() {
-        console.log('watcher start');
         if (this.watchId) { return; }
 
         let _self = this;
-        this.watchId = navigator.geolocation.watchPosition(
-            (position) => {
+
+        let watchSuccess = (position) => {
                 console.log(`watchPosition : ${position.coords.latitude}, ${position.coords.longitude}`);
                 this.lat = position.coords.latitude;
                 this.lng = position.coords.longitude;
 
-                this.events.forEach((event) => {
-                    if (typeof event === 'function') {
-                        event(_self.lat, _self.lng);
-                    }
-                });
+                (this.events['watch']||function(){})(_self.lat, _self.lng);
             },
-        );
+            posSuccess = (position) => {
+                console.log(`getCurrentPosition : ${position.coords.latitude}, ${position.coords.longitude}`);
+                this.lat = position.coords.latitude;
+                this.lng = position.coords.longitude;
+
+                (this.events['position']||function(){})(_self.lat, _self.lng);
+            },
+            error = (e) => {
+                console.log(`watch error - code : ${e.code}, message : ${e.message}`);
+            };
+
+        let execute = () => {
+            navigator.geolocation.getCurrentPosition(posSuccess, error);
+            this.watchId = navigator.geolocation.watchPosition(watchSuccess, error);
+        };
+
+        setTimeout(execute, 1000);
     }
 
     stop() {
@@ -39,8 +50,8 @@ export default class GeoWatcher {
         }
     }
 
-    addListener(event) {
-        this.events.push(event);
+    addListener(name, event) {
+        this.events[name] = event;
     }
 }
 

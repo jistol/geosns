@@ -10,8 +10,8 @@ import io.github.jistol.geosns.jpa.entry.User;
 import io.github.jistol.geosns.model.LatLngBound;
 import io.github.jistol.geosns.model.Meta;
 import io.github.jistol.geosns.model.PostForm;
+import io.github.jistol.geosns.type.Session;
 import io.github.jistol.geosns.util.Crypt;
-import io.github.jistol.geosns.util.SessionUtil;
 import io.github.jistol.geosns.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,13 +20,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static io.github.jistol.geosns.util.Cast.map;
 import static io.github.jistol.geosns.util.Cast.string;
 
 @Service
@@ -72,16 +70,16 @@ public class PostService {
                 });
     }
 
-    public Post save(HttpSession httpSession, Post post, MultipartFile[] files) throws IOException {
-        post.setUser(SessionUtil.loadUser(httpSession));
+    public Post save(Post post, MultipartFile[] files) throws IOException {
+        post.setUser(Session.loadUser());
         post.setAttaches(store(post.getId(), post.getAttaches(), post.getMetas(), post.getAttachIds(), files));
         post.setCreatedDate(new Date());
         post.setUpdatedDate(new Date());
         return postDao.save(post);
     }
 
-    public Post update(HttpSession httpSession, Post updatePost, MultipartFile[] files) throws IOException {
-        Post post = postDao.findPost(updatePost.getId(), SessionUtil.loadUser(httpSession));
+    public Post update(Post updatePost, MultipartFile[] files) throws IOException {
+        Post post = postDao.findPost(updatePost.getId(), Session.loadUser());
         post.setMessage(updatePost.getMessage());
         post.setScope(updatePost.getScope());
         post.setUpdatedDate(new Date());
