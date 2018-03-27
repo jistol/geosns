@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<included>
+    <property scope="local" name="maxFileSize" value="100MB"/>
+    <property scope="local" name="maxLogHistory" value="7"/>
+    <property scope="local" name="compType" value=".gz"/>
+    <property scope="local" name="pt_COMMON" value="[%d{MM-dd HH:mm:ss.SSS}] %-5.5p [%t] [%C{2}.%M] %4L - %m%n"/>
+    <property scope="local" name="logBaseDir" value="/var/lib/tomcat8/logs"/>
+    <property scope="local" name="logOldDir" value="/var/lib/tomcat8/logs/old/%d{yyyy-MM-dd}"/>
+    <property scope="local" name="logLevel" value="DEBUG"/>
+</included>

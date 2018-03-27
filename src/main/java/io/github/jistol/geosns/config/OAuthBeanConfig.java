@@ -1,5 +1,6 @@
 package io.github.jistol.geosns.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +22,7 @@ import java.util.Collection;
 import static io.github.jistol.geosns.util.Cast.list;
 import static io.github.jistol.geosns.util.Cast.msgFormat;
 
+@Slf4j
 @Configuration
 public class OAuthBeanConfig {
     @Value("${oauth.login-complete-url}") private String loginCompleteUrl;
@@ -109,7 +111,10 @@ public class OAuthBeanConfig {
         tokenServices.setRestTemplate(template);
         filter.setTokenServices(tokenServices);
         filter.setAuthenticationSuccessHandler((request, response, authentication) -> response.sendRedirect(msgFormat(loginCompleteUrl, social)));
-        filter.setAuthenticationFailureHandler((request, response, exception) -> response.sendRedirect("/error"));
+        filter.setAuthenticationFailureHandler((request, response, exception) -> {
+            log.error("facebook error : ", exception);
+            response.sendRedirect("/error");
+        });
         return filter;
     }
 }

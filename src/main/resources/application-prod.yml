@@ -10,9 +10,6 @@ spring:
         multipart:
             max-file-size: 30MB
             max-request-size: -1
-    redis:
-        host: localhost
-        port: 6379
     session:
         # redis / hash_map
         store-type: hash_map
@@ -37,11 +34,9 @@ post:
     load-limit: 50
 
 base:
-    path: /Users/jistol/IdeaProjects/github/geo-sns
+    path: /var/lib/tomcat8
     attach-path: ${base.path}/attaches
-    #url: http://localhost:${server.port}/
-    url: http://localhost:8090/
-    #url: http://192.168.123.253:8080/
+    url: https://geosns.jistol.com/
     file-timeout: 360
     key: okeJIWooiYoBFsji
     iv: DeKQ6QcgCkZuj7aK

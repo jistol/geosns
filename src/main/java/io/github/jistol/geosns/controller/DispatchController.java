@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Map;
@@ -14,6 +15,12 @@ import java.util.Map;
 @Slf4j
 @Controller
 public class DispatchController {
+    @ResponseBody
+    @RequestMapping("/ping")
+    public String ping() {
+        return "pong";
+    }
+
     @RequestMapping({"/map", "/map/**"})
     public ModelAndView map() {
         AbstractAuthenticationToken auth = (AbstractAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();

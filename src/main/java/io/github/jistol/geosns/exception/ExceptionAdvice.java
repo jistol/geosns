@@ -37,4 +37,11 @@ public class ExceptionAdvice {
         log.error("GeoSnsRestRuntimeException - {}", e.toResultMap());
         return ResponseEntity.badRequest().body(e.toResultMap());
     }
+
+    @ExceptionHandler({ Exception.class })
+    public ResponseEntity<String> error(Exception e) {
+        log.error("{} - {}", e.getClass().getName(), e.getMessage());
+        log.error("stacktrace : ", e);
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
 }
